@@ -1,0 +1,284 @@
+<@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@>
+
+ DEFINITION SHEET CONTENT:
+ ____________________________________________
+   [V] CARTUBE     -> tested   : 30/05/2017
+   [V] GEAR        -> tested   : 30/05/2017
+   [V] DRIVETIME   -> tested   : 30/05/2017
+   [ ] AUTONEWS    ->          :
+
+<@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@><@>
+
+
+*************************************************************************************************
+CARTUBE http://www.cartube.co.il/%D7%97%D7%93%D7%A9%D7%95%D7%AA-%D7%A8%D7%9B%D7%91
+*************************************************************************************************
+
+DEFINITION:
+____________________________________________________________________
+Main news container: $main
+	- div.main-content div#infinity-cont
+Main news article:  $article
+    - $main div.items > article
+Main news article link:
+	- $article[] a.article-link { href }
+Main news article title:
+    - $article[] h2.article-title { text }
+Main news article desc:
+	- $article[] section.article-intro { text }
+Main news article date:
+    - $article[] dd.published { text }
+
+PAYLOAD:
+____________________________________________________________________
+function ca_payload() {
+var ca_tools = {
+	encode : function b64EncodeUnicode(str) {
+		return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+			return String.fromCharCode('0x' + p1);
+		}));
+	},
+	decode : function b64DecodeUnicode(str) {
+		return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+			return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+		}).join(''));
+	},
+	tojson : function(obj) { return JSON.stringify(obj); },
+	toobj  : function(obj) { return JSON.parse(obj); }
+};
+var ca_result = { status: 0, mes: 'done', count: 0, obj: [] };
+var ca_art = jQuery('div.main-content div#infinity-cont div.items article');
+if (ca_art.length) {
+	ca_result.count = ca_art.length;
+	ca_art.each(function(i,e){
+		var $e = jQuery(e);
+		var add = {
+			link  : $e.find('a.article-link')[0].href || "",
+			img	  : $e.find('a.article-link > img')[0].src || "",
+			title : $e.find('h2.article-title').text() || "",
+			desc  : $e.find('section.article-intro').text() || "",
+			date  : $e.find('dd.published').text() || "",
+		};
+		add.title = add.title.replace(/(\r\n|\n|\r|\t|  )/gm,"");
+		add.desc = add.desc.replace(/(\r\n|\n|\r|\t|  )/gm,"");
+		add.date = add.date.replace(/(\r\n|\n|\r|\t|  )/gm,"");
+		ca_result.obj.push(add);
+	});
+} else { ca_result.status = 1; ca_result.mes = "cant get articels"; }
+return ca_tools.encode(ca_tools.tojson(ca_result));
+}
+ca_payload();
+
+CONVERTED:
+____________________________________________________________________________
+aHR0cDovL3d3dy5jYXJ0dWJlLmNvLmlsLyVENyU5NyVENyU5MyVENyVBOSVENyU5NSVENyVBQS0lRDclQTglRDclOUIlRDclOTE=
+ZnVuY3Rpb24gY2FfcGF5bG9hZCgpIHsNCnZhciBjYV90b29scyA9IHsNCgllbmNvZGUgOiBmdW5jdGlvbiBiNjRFbmNvZGVVbmljb2RlKHN0cikgew0KCQlyZXR1cm4gYnRvYShlbmNvZGVVUklDb21wb25lbnQoc3RyKS5yZXBsYWNlKC8lKFswLTlBLUZdezJ9KS9nLCBmdW5jdGlvbihtYXRjaCwgcDEpIHsNCgkJCXJldHVybiBTdHJpbmcuZnJvbUNoYXJDb2RlKCcweCcgKyBwMSk7DQoJCX0pKTsNCgl9LA0KCWRlY29kZSA6IGZ1bmN0aW9uIGI2NERlY29kZVVuaWNvZGUoc3RyKSB7DQoJCXJldHVybiBkZWNvZGVVUklDb21wb25lbnQoQXJyYXkucHJvdG90eXBlLm1hcC5jYWxsKGF0b2Ioc3RyKSwgZnVuY3Rpb24oYykgew0KCQkJcmV0dXJuICclJyArICgnMDAnICsgYy5jaGFyQ29kZUF0KDApLnRvU3RyaW5nKDE2KSkuc2xpY2UoLTIpOw0KCQl9KS5qb2luKCcnKSk7DQoJfSwNCgl0b2pzb24gOiBmdW5jdGlvbihvYmopIHsgcmV0dXJuIEpTT04uc3RyaW5naWZ5KG9iaik7IH0sDQoJdG9vYmogIDogZnVuY3Rpb24ob2JqKSB7IHJldHVybiBKU09OLnBhcnNlKG9iaik7IH0NCn07DQp2YXIgY2FfcmVzdWx0ID0geyBzdGF0dXM6IDAsIG1lczogJ2RvbmUnLCBjb3VudDogMCwgb2JqOiBbXSB9Ow0KdmFyIGNhX2FydCA9IGpRdWVyeSgnZGl2Lm1haW4tY29udGVudCBkaXYjaW5maW5pdHktY29udCBkaXYuaXRlbXMgYXJ0aWNsZScpOw0KaWYgKGNhX2FydC5sZW5ndGgpIHsNCgljYV9yZXN1bHQuY291bnQgPSBjYV9hcnQubGVuZ3RoOw0KCWNhX2FydC5lYWNoKGZ1bmN0aW9uKGksZSl7DQoJCXZhciAkZSA9IGpRdWVyeShlKTsNCgkJdmFyIGFkZCA9IHsNCgkJCWxpbmsgIDogJGUuZmluZCgnYS5hcnRpY2xlLWxpbmsnKVswXS5ocmVmIHx8ICIiLA0KCQkJaW1nCSAgOiAkZS5maW5kKCdhLmFydGljbGUtbGluayA+IGltZycpWzBdLnNyYyB8fCAiIiwNCgkJCXRpdGxlIDogJGUuZmluZCgnaDIuYXJ0aWNsZS10aXRsZScpLnRleHQoKSB8fCAiIiwNCgkJCWRlc2MgIDogJGUuZmluZCgnc2VjdGlvbi5hcnRpY2xlLWludHJvJykudGV4dCgpIHx8ICIiLA0KCQkJZGF0ZSAgOiAkZS5maW5kKCdkZC5wdWJsaXNoZWQnKS50ZXh0KCkgfHwgIiIsDQoJCX07DQoJCWFkZC50aXRsZSA9IGFkZC50aXRsZS5yZXBsYWNlKC8oXHJcbnxcbnxccnxcdHwgICkvZ20sIiIpOw0KCQlhZGQuZGVzYyA9IGFkZC5kZXNjLnJlcGxhY2UoLyhcclxufFxufFxyfFx0fCAgKS9nbSwiIik7DQoJCWFkZC5kYXRlID0gYWRkLmRhdGUucmVwbGFjZSgvKFxyXG58XG58XHJ8XHR8ICApL2dtLCIiKTsNCgkJY2FfcmVzdWx0Lm9iai5wdXNoKGFkZCk7DQoJfSk7DQp9IGVsc2UgeyBjYV9yZXN1bHQuc3RhdHVzID0gMTsgY2FfcmVzdWx0Lm1lcyA9ICJjYW50IGdldCBhcnRpY2VscyI7IH0NCnJldHVybiBjYV90b29scy5lbmNvZGUoY2FfdG9vbHMudG9qc29uKGNhX3Jlc3VsdCkpOw0KfQ0KY2FfcGF5bG9hZCgpOw==
+@COMMAND-CARTUBE@
+--debug --out "C:\\Scraperout\\" --target "aHR0cDovL3d3dy5jYXJ0dWJlLmNvLmlsLyVENyU5NyVENyU5MyVENyVBOSVENyU5NSVENyVBQS0lRDclQTglRDclOUIlRDclOTE=" --payload "ZnVuY3Rpb24gY2FfcGF5bG9hZCgpIHsNCnZhciBjYV90b29scyA9IHsNCgllbmNvZGUgOiBmdW5jdGlvbiBiNjRFbmNvZGVVbmljb2RlKHN0cikgew0KCQlyZXR1cm4gYnRvYShlbmNvZGVVUklDb21wb25lbnQoc3RyKS5yZXBsYWNlKC8lKFswLTlBLUZdezJ9KS9nLCBmdW5jdGlvbihtYXRjaCwgcDEpIHsNCgkJCXJldHVybiBTdHJpbmcuZnJvbUNoYXJDb2RlKCcweCcgKyBwMSk7DQoJCX0pKTsNCgl9LA0KCWRlY29kZSA6IGZ1bmN0aW9uIGI2NERlY29kZVVuaWNvZGUoc3RyKSB7DQoJCXJldHVybiBkZWNvZGVVUklDb21wb25lbnQoQXJyYXkucHJvdG90eXBlLm1hcC5jYWxsKGF0b2Ioc3RyKSwgZnVuY3Rpb24oYykgew0KCQkJcmV0dXJuICclJyArICgnMDAnICsgYy5jaGFyQ29kZUF0KDApLnRvU3RyaW5nKDE2KSkuc2xpY2UoLTIpOw0KCQl9KS5qb2luKCcnKSk7DQoJfSwNCgl0b2pzb24gOiBmdW5jdGlvbihvYmopIHsgcmV0dXJuIEpTT04uc3RyaW5naWZ5KG9iaik7IH0sDQoJdG9vYmogIDogZnVuY3Rpb24ob2JqKSB7IHJldHVybiBKU09OLnBhcnNlKG9iaik7IH0NCn07DQp2YXIgY2FfcmVzdWx0ID0geyBzdGF0dXM6IDAsIG1lczogJ2RvbmUnLCBjb3VudDogMCwgb2JqOiBbXSB9Ow0KdmFyIGNhX2FydCA9IGpRdWVyeSgnZGl2Lm1haW4tY29udGVudCBkaXYjaW5maW5pdHktY29udCBkaXYuaXRlbXMgYXJ0aWNsZScpOw0KaWYgKGNhX2FydC5sZW5ndGgpIHsNCgljYV9yZXN1bHQuY291bnQgPSBjYV9hcnQubGVuZ3RoOw0KCWNhX2FydC5lYWNoKGZ1bmN0aW9uKGksZSl7DQoJCXZhciAkZSA9IGpRdWVyeShlKTsNCgkJdmFyIGFkZCA9IHsNCgkJCWxpbmsgIDogJGUuZmluZCgnYS5hcnRpY2xlLWxpbmsnKVswXS5ocmVmIHx8ICIiLA0KCQkJaW1nCSAgOiAkZS5maW5kKCdhLmFydGljbGUtbGluayA+IGltZycpWzBdLnNyYyB8fCAiIiwNCgkJCXRpdGxlIDogJGUuZmluZCgnaDIuYXJ0aWNsZS10aXRsZScpLnRleHQoKSB8fCAiIiwNCgkJCWRlc2MgIDogJGUuZmluZCgnc2VjdGlvbi5hcnRpY2xlLWludHJvJykudGV4dCgpIHx8ICIiLA0KCQkJZGF0ZSAgOiAkZS5maW5kKCdkZC5wdWJsaXNoZWQnKS50ZXh0KCkgfHwgIiIsDQoJCX07DQoJCWFkZC50aXRsZSA9IGFkZC50aXRsZS5yZXBsYWNlKC8oXHJcbnxcbnxccnxcdHwgICkvZ20sIiIpOw0KCQlhZGQuZGVzYyA9IGFkZC5kZXNjLnJlcGxhY2UoLyhcclxufFxufFxyfFx0fCAgKS9nbSwiIik7DQoJCWFkZC5kYXRlID0gYWRkLmRhdGUucmVwbGFjZSgvKFxyXG58XG58XHJ8XHR8ICApL2dtLCIiKTsNCgkJY2FfcmVzdWx0Lm9iai5wdXNoKGFkZCk7DQoJfSk7DQp9IGVsc2UgeyBjYV9yZXN1bHQuc3RhdHVzID0gMTsgY2FfcmVzdWx0Lm1lcyA9ICJjYW50IGdldCBhcnRpY2VscyI7IH0NCnJldHVybiBjYV90b29scy5lbmNvZGUoY2FfdG9vbHMudG9qc29uKGNhX3Jlc3VsdCkpOw0KfQ0KY2FfcGF5bG9hZCgpOw=="
+@ENDCOMMAND@
+
+
+
+
+*************************************************************************************************
+GEAR http://www.gear.co.il/%D7%9B%D7%AA%D7%91%D7%95%D7%AA_%D7%A8%D7%9B%D7%91/%D7%A7%D7%98%D7%92%D7%95%D7%A8%D7%99%D7%95%D7%AA/%D7%97%D7%93%D7%A9%D7%95%D7%AA_%D7%A8%D7%9B%D7%91_%D7%9E%D7%A7%D7%95%D7%9E%D7%99%D7%95%D7%AA
+*************************************************************************************************
+
+DEFINITION:
+____________________________________________________________________
+Main news container: $main
+	- div.articles-group.section > ul.list
+Main news article:  $article
+    - $main > li
+Main news article link:
+	- $article[] a.thumb { href }
+Main news article title:
+    - $article[] h2.h2article { text }
+Main news article desc:
+	- $article[] > p[1] { text } + > div.article-content { text }
+Main news article date:
+    - $article[] > p.meta (rem span, a) { text }
+
+PAYLOAD:
+_____________________________________________________________________
+function ca_payload() {
+var ca_tools = {
+	encode : function b64EncodeUnicode(str) {
+		return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+			return String.fromCharCode('0x' + p1);
+		}));
+	},
+	decode : function b64DecodeUnicode(str) {
+		return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+			return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+		}).join(''));
+	},
+	tojson : function(obj) { return JSON.stringify(obj); },
+	toobj  : function(obj) { return JSON.parse(obj); }
+};
+var ca_result = { status: 0, mes: 'done', count: 0, obj: [] };
+var ca_art = jQuery('div.articles-group.section > ul.list > li');
+if (ca_art.length) {
+	ca_result.count = ca_art.length;
+	ca_art.each(function(i,e){
+		var $e = jQuery(e);
+		var add = {
+			link  : $e.find('a.thumb')[0].href || "",
+			img	  : $e.find('a.thumb > img')[0].src || "",
+			title : $e.find('h2.h2article').text() || "",
+			desc  : $e.find('p').eq(1).text() + $e.find('div.article-content').text(),
+			date  : $e.find('p.meta').find('span,a').remove().end().text() || "",
+		};
+		add.title = add.title.replace(/(\r\n|\n|\r|\t|  )/gm,"");
+		add.desc = add.desc.replace(/(\r\n|\n|\r|\t|  )/gm,"");
+		add.date = add.date.replace(/(\r\n|\n|\r|\t|  )/gm,"");
+		ca_result.obj.push(add);
+	});
+} else { ca_result.status = 1; ca_result.mes = "cant get articels"; }
+return ca_tools.encode(ca_tools.tojson(ca_result));
+}
+ca_payload();
+
+CONVERTED:
+____________________________________________________________________________
+aHR0cDovL3d3dy5nZWFyLmNvLmlsLyVENyU5QiVENyVBQSVENyU5MSVENyU5NSVENyVBQV8lRDclQTglRDclOUIlRDclOTEvJUQ3JUE3JUQ3JTk4JUQ3JTkyJUQ3JTk1JUQ3JUE4JUQ3JTk5JUQ3JTk1JUQ3JUFBLyVENyU5NyVENyU5MyVENyVBOSVENyU5NSVENyVBQV8lRDclQTglRDclOUIlRDclOTFfJUQ3JTlFJUQ3JUE3JUQ3JTk1JUQ3JTlFJUQ3JTk5JUQ3JTk1JUQ3JUFB
+ZnVuY3Rpb24gY2FfcGF5bG9hZCgpIHsNCnZhciBjYV90b29scyA9IHsNCgllbmNvZGUgOiBmdW5jdGlvbiBiNjRFbmNvZGVVbmljb2RlKHN0cikgew0KCQlyZXR1cm4gYnRvYShlbmNvZGVVUklDb21wb25lbnQoc3RyKS5yZXBsYWNlKC8lKFswLTlBLUZdezJ9KS9nLCBmdW5jdGlvbihtYXRjaCwgcDEpIHsNCgkJCXJldHVybiBTdHJpbmcuZnJvbUNoYXJDb2RlKCcweCcgKyBwMSk7DQoJCX0pKTsNCgl9LA0KCWRlY29kZSA6IGZ1bmN0aW9uIGI2NERlY29kZVVuaWNvZGUoc3RyKSB7DQoJCXJldHVybiBkZWNvZGVVUklDb21wb25lbnQoQXJyYXkucHJvdG90eXBlLm1hcC5jYWxsKGF0b2Ioc3RyKSwgZnVuY3Rpb24oYykgew0KCQkJcmV0dXJuICclJyArICgnMDAnICsgYy5jaGFyQ29kZUF0KDApLnRvU3RyaW5nKDE2KSkuc2xpY2UoLTIpOw0KCQl9KS5qb2luKCcnKSk7DQoJfSwNCgl0b2pzb24gOiBmdW5jdGlvbihvYmopIHsgcmV0dXJuIEpTT04uc3RyaW5naWZ5KG9iaik7IH0sDQoJdG9vYmogIDogZnVuY3Rpb24ob2JqKSB7IHJldHVybiBKU09OLnBhcnNlKG9iaik7IH0NCn07DQp2YXIgY2FfcmVzdWx0ID0geyBzdGF0dXM6IDAsIG1lczogJ2RvbmUnLCBjb3VudDogMCwgb2JqOiBbXSB9Ow0KdmFyIGNhX2FydCA9IGpRdWVyeSgnZGl2LmFydGljbGVzLWdyb3VwLnNlY3Rpb24gPiB1bC5saXN0ID4gbGknKTsNCmlmIChjYV9hcnQubGVuZ3RoKSB7DQoJY2FfcmVzdWx0LmNvdW50ID0gY2FfYXJ0Lmxlbmd0aDsNCgljYV9hcnQuZWFjaChmdW5jdGlvbihpLGUpew0KCQl2YXIgJGUgPSBqUXVlcnkoZSk7DQoJCXZhciBhZGQgPSB7DQoJCQlsaW5rICA6ICRlLmZpbmQoJ2EudGh1bWInKVswXS5ocmVmIHx8ICIiLA0KCQkJaW1nCSAgOiAkZS5maW5kKCdhLnRodW1iID4gaW1nJylbMF0uc3JjIHx8ICIiLA0KCQkJdGl0bGUgOiAkZS5maW5kKCdoMi5oMmFydGljbGUnKS50ZXh0KCkgfHwgIiIsDQoJCQlkZXNjICA6ICRlLmZpbmQoJ3AnKS5lcSgxKS50ZXh0KCkgKyAkZS5maW5kKCdkaXYuYXJ0aWNsZS1jb250ZW50JykudGV4dCgpLA0KCQkJZGF0ZSAgOiAkZS5maW5kKCdwLm1ldGEnKS5maW5kKCdzcGFuLGEnKS5yZW1vdmUoKS5lbmQoKS50ZXh0KCkgfHwgIiIsDQoJCX07DQoJCWFkZC50aXRsZSA9IGFkZC50aXRsZS5yZXBsYWNlKC8oXHJcbnxcbnxccnxcdHwgICkvZ20sIiIpOw0KCQlhZGQuZGVzYyA9IGFkZC5kZXNjLnJlcGxhY2UoLyhcclxufFxufFxyfFx0fCAgKS9nbSwiIik7DQoJCWFkZC5kYXRlID0gYWRkLmRhdGUucmVwbGFjZSgvKFxyXG58XG58XHJ8XHR8ICApL2dtLCIiKTsNCgkJY2FfcmVzdWx0Lm9iai5wdXNoKGFkZCk7DQoJfSk7DQp9IGVsc2UgeyBjYV9yZXN1bHQuc3RhdHVzID0gMTsgY2FfcmVzdWx0Lm1lcyA9ICJjYW50IGdldCBhcnRpY2VscyI7IH0NCnJldHVybiBjYV90b29scy5lbmNvZGUoY2FfdG9vbHMudG9qc29uKGNhX3Jlc3VsdCkpOw0KfQ0KY2FfcGF5bG9hZCgpOw==
+@COMMAND-GEAR@
+--debug --out "C:\\Scraperout\\" --target "aHR0cDovL3d3dy5nZWFyLmNvLmlsLyVENyU5QiVENyVBQSVENyU5MSVENyU5NSVENyVBQV8lRDclQTglRDclOUIlRDclOTEvJUQ3JUE3JUQ3JTk4JUQ3JTkyJUQ3JTk1JUQ3JUE4JUQ3JTk5JUQ3JTk1JUQ3JUFBLyVENyU5NyVENyU5MyVENyVBOSVENyU5NSVENyVBQV8lRDclQTglRDclOUIlRDclOTFfJUQ3JTlFJUQ3JUE3JUQ3JTk1JUQ3JTlFJUQ3JTk5JUQ3JTk1JUQ3JUFB" --payload "ZnVuY3Rpb24gY2FfcGF5bG9hZCgpIHsNCnZhciBjYV90b29scyA9IHsNCgllbmNvZGUgOiBmdW5jdGlvbiBiNjRFbmNvZGVVbmljb2RlKHN0cikgew0KCQlyZXR1cm4gYnRvYShlbmNvZGVVUklDb21wb25lbnQoc3RyKS5yZXBsYWNlKC8lKFswLTlBLUZdezJ9KS9nLCBmdW5jdGlvbihtYXRjaCwgcDEpIHsNCgkJCXJldHVybiBTdHJpbmcuZnJvbUNoYXJDb2RlKCcweCcgKyBwMSk7DQoJCX0pKTsNCgl9LA0KCWRlY29kZSA6IGZ1bmN0aW9uIGI2NERlY29kZVVuaWNvZGUoc3RyKSB7DQoJCXJldHVybiBkZWNvZGVVUklDb21wb25lbnQoQXJyYXkucHJvdG90eXBlLm1hcC5jYWxsKGF0b2Ioc3RyKSwgZnVuY3Rpb24oYykgew0KCQkJcmV0dXJuICclJyArICgnMDAnICsgYy5jaGFyQ29kZUF0KDApLnRvU3RyaW5nKDE2KSkuc2xpY2UoLTIpOw0KCQl9KS5qb2luKCcnKSk7DQoJfSwNCgl0b2pzb24gOiBmdW5jdGlvbihvYmopIHsgcmV0dXJuIEpTT04uc3RyaW5naWZ5KG9iaik7IH0sDQoJdG9vYmogIDogZnVuY3Rpb24ob2JqKSB7IHJldHVybiBKU09OLnBhcnNlKG9iaik7IH0NCn07DQp2YXIgY2FfcmVzdWx0ID0geyBzdGF0dXM6IDAsIG1lczogJ2RvbmUnLCBjb3VudDogMCwgb2JqOiBbXSB9Ow0KdmFyIGNhX2FydCA9IGpRdWVyeSgnZGl2LmFydGljbGVzLWdyb3VwLnNlY3Rpb24gPiB1bC5saXN0ID4gbGknKTsNCmlmIChjYV9hcnQubGVuZ3RoKSB7DQoJY2FfcmVzdWx0LmNvdW50ID0gY2FfYXJ0Lmxlbmd0aDsNCgljYV9hcnQuZWFjaChmdW5jdGlvbihpLGUpew0KCQl2YXIgJGUgPSBqUXVlcnkoZSk7DQoJCXZhciBhZGQgPSB7DQoJCQlsaW5rICA6ICRlLmZpbmQoJ2EudGh1bWInKVswXS5ocmVmIHx8ICIiLA0KCQkJaW1nCSAgOiAkZS5maW5kKCdhLnRodW1iID4gaW1nJylbMF0uc3JjIHx8ICIiLA0KCQkJdGl0bGUgOiAkZS5maW5kKCdoMi5oMmFydGljbGUnKS50ZXh0KCkgfHwgIiIsDQoJCQlkZXNjICA6ICRlLmZpbmQoJ3AnKS5lcSgxKS50ZXh0KCkgKyAkZS5maW5kKCdkaXYuYXJ0aWNsZS1jb250ZW50JykudGV4dCgpLA0KCQkJZGF0ZSAgOiAkZS5maW5kKCdwLm1ldGEnKS5maW5kKCdzcGFuLGEnKS5yZW1vdmUoKS5lbmQoKS50ZXh0KCkgfHwgIiIsDQoJCX07DQoJCWFkZC50aXRsZSA9IGFkZC50aXRsZS5yZXBsYWNlKC8oXHJcbnxcbnxccnxcdHwgICkvZ20sIiIpOw0KCQlhZGQuZGVzYyA9IGFkZC5kZXNjLnJlcGxhY2UoLyhcclxufFxufFxyfFx0fCAgKS9nbSwiIik7DQoJCWFkZC5kYXRlID0gYWRkLmRhdGUucmVwbGFjZSgvKFxyXG58XG58XHJ8XHR8ICApL2dtLCIiKTsNCgkJY2FfcmVzdWx0Lm9iai5wdXNoKGFkZCk7DQoJfSk7DQp9IGVsc2UgeyBjYV9yZXN1bHQuc3RhdHVzID0gMTsgY2FfcmVzdWx0Lm1lcyA9ICJjYW50IGdldCBhcnRpY2VscyI7IH0NCnJldHVybiBjYV90b29scy5lbmNvZGUoY2FfdG9vbHMudG9qc29uKGNhX3Jlc3VsdCkpOw0KfQ0KY2FfcGF5bG9hZCgpOw=="
+@ENDCOMMAND@
+
+*************************************************************************************************
+DRIVETIME http://www.drivetime.co.il/%D7%97%D7%93%D7%A9%D7%95%D7%AA-%D7%A8%D7%9B%D7%91/
+*************************************************************************************************
+
+DEFINITION:
+____________________________________________________________________
+Main news container: $main
+	- div.post-listing.archive-box
+Main news article:  $article
+    - $main > article.item-list
+Main news article link:
+	- $article[] h2.post-box-title > a { href }
+Main news article title:
+    - $article[] h2.post-box-title { text }
+Main news article desc:
+	- $article[] div.entry > p[0] { text }
+Main news article date:
+    - $article[] p.post-meta > span.tie-date { text }
+
+PAYLOAD:
+_____________________________________________________________________
+function ca_payload() {
+var ca_tools = {
+	encode : function b64EncodeUnicode(str) {
+		return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+			return String.fromCharCode('0x' + p1);
+		}));
+	},
+	decode : function b64DecodeUnicode(str) {
+		return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+			return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+		}).join(''));
+	},
+	tojson : function(obj) { return JSON.stringify(obj); },
+	toobj  : function(obj) { return JSON.parse(obj); }
+};
+var ca_result = { status: 0, mes: 'done', count: 0, obj: [] };
+var ca_art = jQuery('div.post-listing.archive-box > article.item-list');
+if (ca_art.length) {
+	ca_result.count = ca_art.length;
+	ca_art.each(function(i,e){
+		var $e = jQuery(e);
+		var add = {
+			link  : $e.find('h2.post-box-title > a')[0].href || "",
+			img	  : $e.find('div.post-thumbnail > a > img')[0].src || "",
+			title : $e.find('h2.post-box-title').text() || "",
+			desc  : $e.find('div.entry > p').eq(0).text() || "",
+			date  : $e.find('p.post-meta > span.tie-date').text() || "",
+		};
+		add.title = add.title.replace(/(\r\n|\n|\r|\t|  )/gm,"");
+		add.desc = add.desc.replace(/(\r\n|\n|\r|\t|  )/gm,"");
+		add.date = add.date.replace(/(\r\n|\n|\r|\t|  )/gm,"");
+		ca_result.obj.push(add);
+	});
+} else { ca_result.status = 1; ca_result.mes = "cant get articels"; }
+return ca_tools.encode(ca_tools.tojson(ca_result));
+}
+ca_payload();
+
+CONVERTED:
+____________________________________________________________________________
+aHR0cDovL3d3dy5kcml2ZXRpbWUuY28uaWwvJUQ3JTk3JUQ3JTkzJUQ3JUE5JUQ3JTk1JUQ3JUFBLSVENyVBOCVENyU5QiVENyU5MS8=
+ZnVuY3Rpb24gY2FfcGF5bG9hZCgpIHsNCnZhciBjYV90b29scyA9IHsNCgllbmNvZGUgOiBmdW5jdGlvbiBiNjRFbmNvZGVVbmljb2RlKHN0cikgew0KCQlyZXR1cm4gYnRvYShlbmNvZGVVUklDb21wb25lbnQoc3RyKS5yZXBsYWNlKC8lKFswLTlBLUZdezJ9KS9nLCBmdW5jdGlvbihtYXRjaCwgcDEpIHsNCgkJCXJldHVybiBTdHJpbmcuZnJvbUNoYXJDb2RlKCcweCcgKyBwMSk7DQoJCX0pKTsNCgl9LA0KCWRlY29kZSA6IGZ1bmN0aW9uIGI2NERlY29kZVVuaWNvZGUoc3RyKSB7DQoJCXJldHVybiBkZWNvZGVVUklDb21wb25lbnQoQXJyYXkucHJvdG90eXBlLm1hcC5jYWxsKGF0b2Ioc3RyKSwgZnVuY3Rpb24oYykgew0KCQkJcmV0dXJuICclJyArICgnMDAnICsgYy5jaGFyQ29kZUF0KDApLnRvU3RyaW5nKDE2KSkuc2xpY2UoLTIpOw0KCQl9KS5qb2luKCcnKSk7DQoJfSwNCgl0b2pzb24gOiBmdW5jdGlvbihvYmopIHsgcmV0dXJuIEpTT04uc3RyaW5naWZ5KG9iaik7IH0sDQoJdG9vYmogIDogZnVuY3Rpb24ob2JqKSB7IHJldHVybiBKU09OLnBhcnNlKG9iaik7IH0NCn07DQp2YXIgY2FfcmVzdWx0ID0geyBzdGF0dXM6IDAsIG1lczogJ2RvbmUnLCBjb3VudDogMCwgb2JqOiBbXSB9Ow0KdmFyIGNhX2FydCA9IGpRdWVyeSgnZGl2LnBvc3QtbGlzdGluZy5hcmNoaXZlLWJveCA+IGFydGljbGUuaXRlbS1saXN0Jyk7DQppZiAoY2FfYXJ0Lmxlbmd0aCkgew0KCWNhX3Jlc3VsdC5jb3VudCA9IGNhX2FydC5sZW5ndGg7DQoJY2FfYXJ0LmVhY2goZnVuY3Rpb24oaSxlKXsNCgkJdmFyICRlID0galF1ZXJ5KGUpOw0KCQl2YXIgYWRkID0gew0KCQkJbGluayAgOiAkZS5maW5kKCdoMi5wb3N0LWJveC10aXRsZSA+IGEnKVswXS5ocmVmIHx8ICIiLA0KCQkJaW1nCSAgOiAkZS5maW5kKCdkaXYucG9zdC10aHVtYm5haWwgPiBhID4gaW1nJylbMF0uc3JjIHx8ICIiLA0KCQkJdGl0bGUgOiAkZS5maW5kKCdoMi5wb3N0LWJveC10aXRsZScpLnRleHQoKSB8fCAiIiwNCgkJCWRlc2MgIDogJGUuZmluZCgnZGl2LmVudHJ5ID4gcCcpLmVxKDApLnRleHQoKSB8fCAiIiwNCgkJCWRhdGUgIDogJGUuZmluZCgncC5wb3N0LW1ldGEgPiBzcGFuLnRpZS1kYXRlJykudGV4dCgpIHx8ICIiLA0KCQl9Ow0KCQlhZGQudGl0bGUgPSBhZGQudGl0bGUucmVwbGFjZSgvKFxyXG58XG58XHJ8XHR8ICApL2dtLCIiKTsNCgkJYWRkLmRlc2MgPSBhZGQuZGVzYy5yZXBsYWNlKC8oXHJcbnxcbnxccnxcdHwgICkvZ20sIiIpOw0KCQlhZGQuZGF0ZSA9IGFkZC5kYXRlLnJlcGxhY2UoLyhcclxufFxufFxyfFx0fCAgKS9nbSwiIik7DQoJCWNhX3Jlc3VsdC5vYmoucHVzaChhZGQpOw0KCX0pOw0KfSBlbHNlIHsgY2FfcmVzdWx0LnN0YXR1cyA9IDE7IGNhX3Jlc3VsdC5tZXMgPSAiY2FudCBnZXQgYXJ0aWNlbHMiOyB9DQpyZXR1cm4gY2FfdG9vbHMuZW5jb2RlKGNhX3Rvb2xzLnRvanNvbihjYV9yZXN1bHQpKTsNCn0NCmNhX3BheWxvYWQoKTs=
+@COMMAND-DRIVETIME@
+--debug --out "C:\\Scraperout\\" --target "aHR0cDovL3d3dy5kcml2ZXRpbWUuY28uaWwvJUQ3JTk3JUQ3JTkzJUQ3JUE5JUQ3JTk1JUQ3JUFBLSVENyVBOCVENyU5QiVENyU5MS8=" --payload "ZnVuY3Rpb24gY2FfcGF5bG9hZCgpIHsNCnZhciBjYV90b29scyA9IHsNCgllbmNvZGUgOiBmdW5jdGlvbiBiNjRFbmNvZGVVbmljb2RlKHN0cikgew0KCQlyZXR1cm4gYnRvYShlbmNvZGVVUklDb21wb25lbnQoc3RyKS5yZXBsYWNlKC8lKFswLTlBLUZdezJ9KS9nLCBmdW5jdGlvbihtYXRjaCwgcDEpIHsNCgkJCXJldHVybiBTdHJpbmcuZnJvbUNoYXJDb2RlKCcweCcgKyBwMSk7DQoJCX0pKTsNCgl9LA0KCWRlY29kZSA6IGZ1bmN0aW9uIGI2NERlY29kZVVuaWNvZGUoc3RyKSB7DQoJCXJldHVybiBkZWNvZGVVUklDb21wb25lbnQoQXJyYXkucHJvdG90eXBlLm1hcC5jYWxsKGF0b2Ioc3RyKSwgZnVuY3Rpb24oYykgew0KCQkJcmV0dXJuICclJyArICgnMDAnICsgYy5jaGFyQ29kZUF0KDApLnRvU3RyaW5nKDE2KSkuc2xpY2UoLTIpOw0KCQl9KS5qb2luKCcnKSk7DQoJfSwNCgl0b2pzb24gOiBmdW5jdGlvbihvYmopIHsgcmV0dXJuIEpTT04uc3RyaW5naWZ5KG9iaik7IH0sDQoJdG9vYmogIDogZnVuY3Rpb24ob2JqKSB7IHJldHVybiBKU09OLnBhcnNlKG9iaik7IH0NCn07DQp2YXIgY2FfcmVzdWx0ID0geyBzdGF0dXM6IDAsIG1lczogJ2RvbmUnLCBjb3VudDogMCwgb2JqOiBbXSB9Ow0KdmFyIGNhX2FydCA9IGpRdWVyeSgnZGl2LnBvc3QtbGlzdGluZy5hcmNoaXZlLWJveCA+IGFydGljbGUuaXRlbS1saXN0Jyk7DQppZiAoY2FfYXJ0Lmxlbmd0aCkgew0KCWNhX3Jlc3VsdC5jb3VudCA9IGNhX2FydC5sZW5ndGg7DQoJY2FfYXJ0LmVhY2goZnVuY3Rpb24oaSxlKXsNCgkJdmFyICRlID0galF1ZXJ5KGUpOw0KCQl2YXIgYWRkID0gew0KCQkJbGluayAgOiAkZS5maW5kKCdoMi5wb3N0LWJveC10aXRsZSA+IGEnKVswXS5ocmVmIHx8ICIiLA0KCQkJaW1nCSAgOiAkZS5maW5kKCdkaXYucG9zdC10aHVtYm5haWwgPiBhID4gaW1nJylbMF0uc3JjIHx8ICIiLA0KCQkJdGl0bGUgOiAkZS5maW5kKCdoMi5wb3N0LWJveC10aXRsZScpLnRleHQoKSB8fCAiIiwNCgkJCWRlc2MgIDogJGUuZmluZCgnZGl2LmVudHJ5ID4gcCcpLmVxKDApLnRleHQoKSB8fCAiIiwNCgkJCWRhdGUgIDogJGUuZmluZCgncC5wb3N0LW1ldGEgPiBzcGFuLnRpZS1kYXRlJykudGV4dCgpIHx8ICIiLA0KCQl9Ow0KCQlhZGQudGl0bGUgPSBhZGQudGl0bGUucmVwbGFjZSgvKFxyXG58XG58XHJ8XHR8ICApL2dtLCIiKTsNCgkJYWRkLmRlc2MgPSBhZGQuZGVzYy5yZXBsYWNlKC8oXHJcbnxcbnxccnxcdHwgICkvZ20sIiIpOw0KCQlhZGQuZGF0ZSA9IGFkZC5kYXRlLnJlcGxhY2UoLyhcclxufFxufFxyfFx0fCAgKS9nbSwiIik7DQoJCWNhX3Jlc3VsdC5vYmoucHVzaChhZGQpOw0KCX0pOw0KfSBlbHNlIHsgY2FfcmVzdWx0LnN0YXR1cyA9IDE7IGNhX3Jlc3VsdC5tZXMgPSAiY2FudCBnZXQgYXJ0aWNlbHMiOyB9DQpyZXR1cm4gY2FfdG9vbHMuZW5jb2RlKGNhX3Rvb2xzLnRvanNvbihjYV9yZXN1bHQpKTsNCn0NCmNhX3BheWxvYWQoKTs="
+@ENDCOMMAND@
+
+
+
+*************************************************************************************************
+AUTONEWS http://autonews.co.il/category/il/
+*************************************************************************************************
+
+DEFINITION:
+____________________________________________________________________
+Main news container: $main
+	- div.post-listing.archive-box
+Main news article:  $article
+    - $main > article.item-list
+Main news article link:
+	- $article[] h2.post-box-title > a { href }
+Main news article title:
+    - $article[] h2.post-box-title { text }
+Main news article desc:
+	- $article[] div.entry > p[0] { text }
+Main news article date:
+    - $article[] p.post-meta > span.tie-date { text }
+
+PAYLOAD:
+_____________________________________________________________________
+function ca_payload() {
+var ca_tools = {
+	encode : function b64EncodeUnicode(str) {
+		return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+			return String.fromCharCode('0x' + p1);
+		}));
+	},
+	decode : function b64DecodeUnicode(str) {
+		return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+			return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+		}).join(''));
+	},
+	tojson : function(obj) { return JSON.stringify(obj); },
+	toobj  : function(obj) { return JSON.parse(obj); }
+};
+var ca_result = { status: 0, mes: 'done', count: 0, obj: [] };
+var ca_art = jQuery('div.post-listing.archive-box > article.item-list');
+if (ca_art.length) {
+	ca_result.count = ca_art.length;
+	ca_art.each(function(i,e){
+		var $e = jQuery(e);
+		var add = {
+			link  : $e.find('h2.post-box-title > a')[0].href || "",
+			img	  : $e.find('div.post-thumbnail > a > img')[0].src || "",
+			title : $e.find('h2.post-box-title').text() || "",
+			desc  : $e.find('div.entry > p').eq(0).text() || "",
+			date  : $e.find('p.post-meta > span.tie-date').text() || "",
+		};
+		add.title = add.title.replace(/(\r\n|\n|\r|\t|  )/gm,"");
+		add.desc = add.desc.replace(/(\r\n|\n|\r|\t|  )/gm,"");
+		add.date = add.date.replace(/(\r\n|\n|\r|\t|  )/gm,"");
+		ca_result.obj.push(add);
+	});
+} else { ca_result.status = 1; ca_result.mes = "cant get articels"; }
+return ca_tools.encode(ca_tools.tojson(ca_result));
+}
+ca_payload();
+
+CONVERTED:
+____________________________________________________________________________
+
+
+@COMMAND-AUTONEWS@
+--debug --out "C:\\Scraperout\\" --target "" --payload ""
+@ENDCOMMAND@
