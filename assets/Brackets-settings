@@ -1,0 +1,11 @@
+Used Extensions:
+-> Brackets Color Picker        :: https://github.com/mikailcolak/brackets-color-picker
+-> Brackets Css Color Preview   :: https://github.com/cmgddd/Brackets-css-color-preview
+-> Brackets Icons               :: https://github.com/ivogabe/Brackets-Icons
+-> Brackets Link File           :: https://github.com/pelatx/brackets-link-file
+-> PHP SmartHints               :: https://github.com/Brackets-PHP/Brackets-PHP-SmartHints
+-> QuickDocsPHP                 :: https://github.com/Wikunia/brackets-QuickDocsPHP
+-> Todo                         :: https://github.com/mikaeljorhult/brackets-todo
+
+Add to pref:
+"highlightMatches": true
