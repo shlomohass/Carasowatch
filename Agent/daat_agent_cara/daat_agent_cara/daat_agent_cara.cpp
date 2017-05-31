@@ -61,6 +61,7 @@ int main(int argc, char** argv)
 	cm::ArgvParser cmd;
 	bool enable_debug = false;
 
+	std::string pname = "";
 	std::string target = URL_TARGET;
 	WebString targetReady;
 	std::string payload = "";
@@ -79,6 +80,7 @@ int main(int argc, char** argv)
 	cmd.setIntroductoryDescription("DAAT custom scraper: " + std::string(SCRAPER_VERSION) + " - By: " + std::string(SCRAPER_AUTHOR));
 	cmd.setHelpOption("h", "help", "Prints help page");
 	cmd.defineOption("debug", "enable debug.", cm::ArgvParser::NoOptionAttribute);
+	cmd.defineOption("name", "The proccess name to use - will also be used for dump naming", cm::ArgvParser::OptionRequiresValue);
 	cmd.defineOption("target", "The target url to scrape - its base64 encoded", cm::ArgvParser::OptionRequiresValue);
 	cmd.defineOption("payload", "The base 64 to payload to deploy.", cm::ArgvParser::OptionRequiresValue);
 	cmd.defineOption("out", "Put results in local folder to.", cm::ArgvParser::OptionRequiresValue);
@@ -91,13 +93,14 @@ int main(int argc, char** argv)
 			std::cout << cmd.parseErrorDescription(result);
 			exitCode = PEC_SUCCESS;
 		} else {
-			std::cout << "ERROR: Check the options please.";
+			//std::cout << "ERROR: Check the options please.";
 			//std::cout << cmd.parseErrorDescription(result);
 			exitCode = PEC_ERR_OPTIONS;
 		}
 	} else {
 		//Set console args:
 		if (cmd.foundOption("debug")) { enable_debug = true; }
+		if (cmd.foundOption("target")) { pname = cmd.optionValue("name").c_str(); }
 		if (cmd.foundOption("target")) { target = cmd.optionValue("target").c_str(); }
 		if (cmd.foundOption("payload")) { payload = std::string(cmd.optionValue("payload").c_str()); }
 		if (cmd.foundOption("out")) { outfolder = std::string(cmd.optionValue("out").c_str()); savetoout = true; }
@@ -142,8 +145,8 @@ int main(int argc, char** argv)
 		//The Scrapers:
 		Scrape scrape(webcore, view, targetReady);
 		scrape.LoadToView(scrape.url);
-		namefordump = outfolder + currentDateTime() + "ScrapedResult.txt";
-		nameforscreen = outfolder + currentDateTime() + "ScrapedScreen.jpeg";
+		namefordump = outfolder + currentDateTime() + "_" + pname + "_ScrapedResult.txt";
+		nameforscreen = outfolder + currentDateTime() + "_" + pname + "_ScrapedScreen.jpeg";
 		if (savetoout) {
 			scrape.getAndSaveScreen(WSLit(nameforscreen.c_str()));
 		}
@@ -177,6 +180,7 @@ int main(int argc, char** argv)
 				<< " DAAT Scraper Dump. -> created:" << currentDateTime() << "  Version: " << SCRAPER_VERSION << std::endl
 				<< "************************************************************************************" << std::endl << std::endl
 				<< " Option used:" << std::endl
+				<< "     - Pname     -> " << pname << std::endl
 				<< "     - Target    -> " << (target.size() > 100 ? target.substr(0, 100) + "..." : target) << std::endl
 				<< "     - Payload   -> " << (BasePayload.size() > 40 ? BasePayload.substr(0, 40) + "..." : BasePayload) << std::endl
 				<< "     - Outfolder -> " << nameforscreen << std::endl
@@ -208,6 +212,7 @@ int main(int argc, char** argv)
 	if (enable_debug) {
 		//Display the debug summary:
 		std::cout << " * Option used:" << std::endl
+			<< "\t\t- Pname     -> " << pname << std::endl
 			<< "\t\t- Target    -> " << target << std::endl
 			<< "\t\t- Payload   -> " << (payload.size() > 15 ? payload.substr(0, 15) + "..." : payload) << std::endl
 			<< "\t\t- Outfolder -> " << nameforscreen << std::endl

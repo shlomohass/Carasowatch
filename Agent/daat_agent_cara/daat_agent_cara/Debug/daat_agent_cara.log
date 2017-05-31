@@ -1,7 +1,7 @@
 ﻿  daat_agent_cara.cpp
 d:\server\carasowatch\agent\daat_agent_cara\daat_agent_cara\daat_agent_cara.cpp(50): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.15063.0\ucrt\time.h(505): note: see declaration of 'localtime'
-d:\server\carasowatch\agent\daat_agent_cara\daat_agent_cara\daat_agent_cara.cpp(162): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+d:\server\carasowatch\agent\daat_agent_cara\daat_agent_cara\daat_agent_cara.cpp(164): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.15063.0\ucrt\stdio.h(1772): note: see declaration of 'sprintf'
   daat_agent_cara.vcxproj -> D:\Server\Carasowatch\Agent\daat_agent_cara\Debug\daat_agent_cara.exe
   daat_agent_cara.vcxproj -> D:\Server\Carasowatch\Agent\daat_agent_cara\Debug\daat_agent_cara.pdb (Partial PDB)
@@ -10,7 +10,7 @@ d:\server\carasowatch\agent\daat_agent_cara\daat_agent_cara\daat_agent_cara.cpp(
      ROBOCOPY     ::     Robust File Copy for Windows                              
   -------------------------------------------------------------------------------
   
-    Started : Tuesday, 30 May 2017 23:27:09
+    Started : Wednesday, 31 May 2017 3:02:43
      Source : C:\Program Files (x86)\Awesomium Technologies LLC\Awesomium SDK\1.7.5.1\build\bin\
        Dest : D:\Server\Carasowatch\Agent\daat_agent_cara\Debug\
   
@@ -36,5 +36,5 @@ d:\server\carasowatch\agent\daat_agent_cara\daat_agent_cara\daat_agent_cara.cpp(
      Files :         8         0         8         0         0         0
      Bytes :   30.15 m         0   30.15 m         0         0         0
      Times :   0:00:00   0:00:00                       0:00:00   0:00:00
-     Ended : Tuesday, 30 May 2017 23:27:09
+     Ended : Wednesday, 31 May 2017 3:02:43
   
