@@ -223,17 +223,19 @@ AUTONEWS http://autonews.co.il/category/il/
 DEFINITION:
 ____________________________________________________________________
 Main news container: $main
-	- div.post-listing.archive-box
+	- div#main-content
 Main news article:  $article
-    - $main > article.item-list
+    - $main > article
 Main news article link:
-	- $article[] h2.post-box-title > a { href }
+	- $article[] div.mh-loop-thumb > a { href }
+Main news article img:
+	- $article[] div.mh-loop-thumb > a > img { src }
 Main news article title:
-    - $article[] h2.post-box-title { text }
+    - $article[] div.mh-loop-content > header > h3 { text }
 Main news article desc:
-	- $article[] div.entry > p[0] { text }
+	- $article[] div.mh-excerpt  { text }
 Main news article date:
-    - $article[] p.post-meta > span.tie-date { text }
+    - $article[] div.mh-loop-content span.mh-meta-date { text }
 
 PAYLOAD:
 _____________________________________________________________________
@@ -253,17 +255,17 @@ var ca_tools = {
 	toobj  : function(obj) { return JSON.parse(obj); }
 };
 var ca_result = { status: 0, mes: 'done', count: 0, obj: [] };
-var ca_art = jQuery('div.post-listing.archive-box > article.item-list');
+var ca_art = jQuery('div#main-content > article');
 if (ca_art.length) {
 	ca_result.count = ca_art.length;
 	ca_art.each(function(i,e){
 		var $e = jQuery(e);
 		var add = {
-			link  : $e.find('h2.post-box-title > a')[0].href || "",
-			img	  : $e.find('div.post-thumbnail > a > img')[0].src || "",
-			title : $e.find('h2.post-box-title').text() || "",
-			desc  : $e.find('div.entry > p').eq(0).text() || "",
-			date  : $e.find('p.post-meta > span.tie-date').text() || "",
+			link  : $e.find('div.mh-loop-thumb > a')[0].href || "",
+			img	  : $e.find('div.mh-loop-thumb > a > img')[0].src || "",
+			title : $e.find('div.mh-loop-content > header > h3').text() || "",
+			desc  : $e.find('div.mh-excerpt').text() || "",
+			date  : $e.find('div.mh-loop-content span.mh-meta-date').text() || "",
 		};
 		add.title = add.title.replace(/(\r\n|\n|\r|\t|  )/gm,"");
 		add.desc = add.desc.replace(/(\r\n|\n|\r|\t|  )/gm,"");
@@ -277,8 +279,8 @@ ca_payload();
 
 CONVERTED:
 ____________________________________________________________________________
-
-
+aHR0cDovL2F1dG9uZXdzLmNvLmlsL2NhdGVnb3J5L2lsLw==
+ZnVuY3Rpb24gY2FfcGF5bG9hZCgpIHsNCnZhciBjYV90b29scyA9IHsNCgllbmNvZGUgOiBmdW5jdGlvbiBiNjRFbmNvZGVVbmljb2RlKHN0cikgew0KCQlyZXR1cm4gYnRvYShlbmNvZGVVUklDb21wb25lbnQoc3RyKS5yZXBsYWNlKC8lKFswLTlBLUZdezJ9KS9nLCBmdW5jdGlvbihtYXRjaCwgcDEpIHsNCgkJCXJldHVybiBTdHJpbmcuZnJvbUNoYXJDb2RlKCcweCcgKyBwMSk7DQoJCX0pKTsNCgl9LA0KCWRlY29kZSA6IGZ1bmN0aW9uIGI2NERlY29kZVVuaWNvZGUoc3RyKSB7DQoJCXJldHVybiBkZWNvZGVVUklDb21wb25lbnQoQXJyYXkucHJvdG90eXBlLm1hcC5jYWxsKGF0b2Ioc3RyKSwgZnVuY3Rpb24oYykgew0KCQkJcmV0dXJuICclJyArICgnMDAnICsgYy5jaGFyQ29kZUF0KDApLnRvU3RyaW5nKDE2KSkuc2xpY2UoLTIpOw0KCQl9KS5qb2luKCcnKSk7DQoJfSwNCgl0b2pzb24gOiBmdW5jdGlvbihvYmopIHsgcmV0dXJuIEpTT04uc3RyaW5naWZ5KG9iaik7IH0sDQoJdG9vYmogIDogZnVuY3Rpb24ob2JqKSB7IHJldHVybiBKU09OLnBhcnNlKG9iaik7IH0NCn07DQp2YXIgY2FfcmVzdWx0ID0geyBzdGF0dXM6IDAsIG1lczogJ2RvbmUnLCBjb3VudDogMCwgb2JqOiBbXSB9Ow0KdmFyIGNhX2FydCA9IGpRdWVyeSgnZGl2I21haW4tY29udGVudCA+IGFydGljbGUnKTsNCmlmIChjYV9hcnQubGVuZ3RoKSB7DQoJY2FfcmVzdWx0LmNvdW50ID0gY2FfYXJ0Lmxlbmd0aDsNCgljYV9hcnQuZWFjaChmdW5jdGlvbihpLGUpew0KCQl2YXIgJGUgPSBqUXVlcnkoZSk7DQoJCXZhciBhZGQgPSB7DQoJCQlsaW5rICA6ICRlLmZpbmQoJ2Rpdi5taC1sb29wLXRodW1iID4gYScpWzBdLmhyZWYgfHwgIiIsDQoJCQlpbWcJICA6ICRlLmZpbmQoJ2Rpdi5taC1sb29wLXRodW1iID4gYSA+IGltZycpWzBdLnNyYyB8fCAiIiwNCgkJCXRpdGxlIDogJGUuZmluZCgnZGl2Lm1oLWxvb3AtY29udGVudCA+IGhlYWRlciA+IGgzJykudGV4dCgpIHx8ICIiLA0KCQkJZGVzYyAgOiAkZS5maW5kKCdkaXYubWgtZXhjZXJwdCcpLnRleHQoKSB8fCAiIiwNCgkJCWRhdGUgIDogJGUuZmluZCgnZGl2Lm1oLWxvb3AtY29udGVudCBzcGFuLm1oLW1ldGEtZGF0ZScpLnRleHQoKSB8fCAiIiwNCgkJfTsNCgkJYWRkLnRpdGxlID0gYWRkLnRpdGxlLnJlcGxhY2UoLyhcclxufFxufFxyfFx0fCAgKS9nbSwiIik7DQoJCWFkZC5kZXNjID0gYWRkLmRlc2MucmVwbGFjZSgvKFxyXG58XG58XHJ8XHR8ICApL2dtLCIiKTsNCgkJYWRkLmRhdGUgPSBhZGQuZGF0ZS5yZXBsYWNlKC8oXHJcbnxcbnxccnxcdHwgICkvZ20sIiIpOw0KCQljYV9yZXN1bHQub2JqLnB1c2goYWRkKTsNCgl9KTsNCn0gZWxzZSB7IGNhX3Jlc3VsdC5zdGF0dXMgPSAxOyBjYV9yZXN1bHQubWVzID0gImNhbnQgZ2V0IGFydGljZWxzIjsgfQ0KcmV0dXJuIGNhX3Rvb2xzLmVuY29kZShjYV90b29scy50b2pzb24oY2FfcmVzdWx0KSk7DQp9DQpjYV9wYXlsb2FkKCk7
 @COMMAND-AUTONEWS@
---debug --name --out "C:\\Scraperout\\" --target "" --payload ""
+--debug --name "AUTONEWS" --out "C:\\Scraperout\\" --target "aHR0cDovL2F1dG9uZXdzLmNvLmlsL2NhdGVnb3J5L2lsLw==" --payload "ZnVuY3Rpb24gY2FfcGF5bG9hZCgpIHsNCnZhciBjYV90b29scyA9IHsNCgllbmNvZGUgOiBmdW5jdGlvbiBiNjRFbmNvZGVVbmljb2RlKHN0cikgew0KCQlyZXR1cm4gYnRvYShlbmNvZGVVUklDb21wb25lbnQoc3RyKS5yZXBsYWNlKC8lKFswLTlBLUZdezJ9KS9nLCBmdW5jdGlvbihtYXRjaCwgcDEpIHsNCgkJCXJldHVybiBTdHJpbmcuZnJvbUNoYXJDb2RlKCcweCcgKyBwMSk7DQoJCX0pKTsNCgl9LA0KCWRlY29kZSA6IGZ1bmN0aW9uIGI2NERlY29kZVVuaWNvZGUoc3RyKSB7DQoJCXJldHVybiBkZWNvZGVVUklDb21wb25lbnQoQXJyYXkucHJvdG90eXBlLm1hcC5jYWxsKGF0b2Ioc3RyKSwgZnVuY3Rpb24oYykgew0KCQkJcmV0dXJuICclJyArICgnMDAnICsgYy5jaGFyQ29kZUF0KDApLnRvU3RyaW5nKDE2KSkuc2xpY2UoLTIpOw0KCQl9KS5qb2luKCcnKSk7DQoJfSwNCgl0b2pzb24gOiBmdW5jdGlvbihvYmopIHsgcmV0dXJuIEpTT04uc3RyaW5naWZ5KG9iaik7IH0sDQoJdG9vYmogIDogZnVuY3Rpb24ob2JqKSB7IHJldHVybiBKU09OLnBhcnNlKG9iaik7IH0NCn07DQp2YXIgY2FfcmVzdWx0ID0geyBzdGF0dXM6IDAsIG1lczogJ2RvbmUnLCBjb3VudDogMCwgb2JqOiBbXSB9Ow0KdmFyIGNhX2FydCA9IGpRdWVyeSgnZGl2I21haW4tY29udGVudCA+IGFydGljbGUnKTsNCmlmIChjYV9hcnQubGVuZ3RoKSB7DQoJY2FfcmVzdWx0LmNvdW50ID0gY2FfYXJ0Lmxlbmd0aDsNCgljYV9hcnQuZWFjaChmdW5jdGlvbihpLGUpew0KCQl2YXIgJGUgPSBqUXVlcnkoZSk7DQoJCXZhciBhZGQgPSB7DQoJCQlsaW5rICA6ICRlLmZpbmQoJ2Rpdi5taC1sb29wLXRodW1iID4gYScpWzBdLmhyZWYgfHwgIiIsDQoJCQlpbWcJICA6ICRlLmZpbmQoJ2Rpdi5taC1sb29wLXRodW1iID4gYSA+IGltZycpWzBdLnNyYyB8fCAiIiwNCgkJCXRpdGxlIDogJGUuZmluZCgnZGl2Lm1oLWxvb3AtY29udGVudCA+IGhlYWRlciA+IGgzJykudGV4dCgpIHx8ICIiLA0KCQkJZGVzYyAgOiAkZS5maW5kKCdkaXYubWgtZXhjZXJwdCcpLnRleHQoKSB8fCAiIiwNCgkJCWRhdGUgIDogJGUuZmluZCgnZGl2Lm1oLWxvb3AtY29udGVudCBzcGFuLm1oLW1ldGEtZGF0ZScpLnRleHQoKSB8fCAiIiwNCgkJfTsNCgkJYWRkLnRpdGxlID0gYWRkLnRpdGxlLnJlcGxhY2UoLyhcclxufFxufFxyfFx0fCAgKS9nbSwiIik7DQoJCWFkZC5kZXNjID0gYWRkLmRlc2MucmVwbGFjZSgvKFxyXG58XG58XHJ8XHR8ICApL2dtLCIiKTsNCgkJYWRkLmRhdGUgPSBhZGQuZGF0ZS5yZXBsYWNlKC8oXHJcbnxcbnxccnxcdHwgICkvZ20sIiIpOw0KCQljYV9yZXN1bHQub2JqLnB1c2goYWRkKTsNCgl9KTsNCn0gZWxzZSB7IGNhX3Jlc3VsdC5zdGF0dXMgPSAxOyBjYV9yZXN1bHQubWVzID0gImNhbnQgZ2V0IGFydGljZWxzIjsgfQ0KcmV0dXJuIGNhX3Rvb2xzLmVuY29kZShjYV90b29scy50b2pzb24oY2FfcmVzdWx0KSk7DQp9DQpjYV9wYXlsb2FkKCk7"
 @ENDCOMMAND@
