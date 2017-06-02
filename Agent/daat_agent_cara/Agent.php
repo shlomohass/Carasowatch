@@ -13,9 +13,19 @@ require_once $_SERVER['DOCUMENT_ROOT']."/Carasowatch/Classes/Page.class.php";
 
 Trace::add_step(__FILE__,"Create objects");
 $Page = new Page( $conf );
-
+$Oper = isset($_REQUEST["save"]) ? true : false;
 $Result = [];
 
+/******************************Tools *************************************/
+
+function toUniDate($old, $oldFormat, $tarFormat) {
+    $date = DateTime::createFromFormat($oldFormat, $old);
+    if ($date) {
+        return $date->format($tarFormat);
+    } else {
+        return "NULL";
+    }
+}
 /*************************** Load Assets *********************************/
 
 $Page->variable("all-targets", $Page::$conn->get("targets"));
@@ -24,10 +34,11 @@ for ($i = 0; $i < $tarCount; $i++) {
 
     if (intval($Page->in_variable("all-targets",$i,"active_targets")) === 1) {
 
-        $name    = $Page->in_variable("all-targets",$i,"name_targets");
-        $outdir  = $Page->in_variable("all-targets",$i,"outdir_targets");
-        $target  = $Page->in_variable("all-targets",$i,"url_base_targets");
-        $payload = $Page->in_variable("all-targets",$i,"payload_base_targets");
+        $name      = $Page->in_variable("all-targets",$i,"name_targets");
+        $outdir    = $Page->in_variable("all-targets",$i,"outdir_targets");
+        $oldFormat = $Page->in_variable("all-targets",$i,"date_format_targets");
+        $target    = $Page->in_variable("all-targets",$i,"url_base_targets");
+        $payload   = $Page->in_variable("all-targets",$i,"payload_base_targets");
         $theCommand = "Release\daat_agent_cara.exe --out ".$outdir." --name ".$name." --target ".$target." --payload ".$payload;
         $found = [];
         $targetId = $Page->in_variable("all-targets",$i,"id_targets");
@@ -43,18 +54,20 @@ for ($i = 0; $i < $tarCount; $i++) {
         
         //Add to Results:
         $Result[$targetId] = array();
-        if (is_array($found) && is_array($found["obj"])) {
+        if (is_array($found) && isset($found["obj"]) && is_array($found["obj"])) {
             foreach ($found["obj"] as $key => $art) {
                 $Result[$targetId][] = [
-                    "date_scraped_articles"  => date('Y-m-d H:i:s'),
-                    "from_target_articles"   => $targetId,
-                    "date_pub_articles"      => $art["date"],
-                    "link_articles"          => $art["link"],
-                    "image_articles"         => $art["img"],
-                    "title_articles"         => $art["title"],
-                    "desc_articles"          => $art["desc"],
-                    "full_content_articles"  => "",
-                    "hide_articles"          => 0
+                    "date_scraped_articles"     => date('Y-m-d H:i:s'),
+                    "from_target_articles"      => $targetId,
+                    "date_pub_articles"         => $art["date"],
+                    "date_used_format_articles" => $oldFormat,
+                    "date_pub_uni_articles"     => toUniDate($art["date"], $oldFormat, "Y-m-d"),
+                    "link_articles"             => $art["link"],
+                    "image_articles"            => $art["img"],
+                    "title_articles"            => $art["title"],
+                    "desc_articles"             => $art["desc"],
+                    "full_content_articles"     => "",
+                    "hide_articles"             => 0
                 ];
             }
         }
@@ -86,7 +99,7 @@ foreach ($Result as $targetId => $targetscraped) {
                 )
             );
             //If no article store to DB:
-            if (empty($check)) {
+            if (empty($check) && $Oper) {
                 if ($Page::$conn->insert_safe( 
                     "articles", 
                     $articlesFound
