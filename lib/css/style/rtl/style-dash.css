@@ -339,8 +339,12 @@ body {
     font-size: 10px;
     color:grey;
 }
-.liveana-card-meta span.datescraped{
-    
+.liveana-card-meta a.liveana_goto_article {
+    float: left;
+    margin-left: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 4px;
 }
 .liveana-card-title h3 {
     font-size: 18px;

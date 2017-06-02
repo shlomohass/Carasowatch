@@ -65,7 +65,7 @@ Trace::reg_var("all-articles-base", $Page->variable("all-articles-base"));
                                 <div class='liveana-source-tag' style='background-color:".$Page->in_variable("all-targets",$article["from_target_articles"],"use_tag_color").";'>".
                                     $Page->in_variable("all-targets",$article["from_target_articles"],"name_targets")."</div>
                                 <div class='liveana-card-image' style='background-image:url(".str_replace("'", "%27", $article["image_articles"]).")'></div>
-                                <div class='liveana-card-meta'><span class='datepub'>".$article["date_pub_uni_articles"]."</span></div>
+                                <div class='liveana-card-meta'><a class='liveana_goto_article' href='".str_replace("'", "%27", $article["link_articles"])."' target='_blank'>עבור לכתבה</a><span class='datepub'>".$article["date_pub_uni_articles"]."</span></div>
                                 <div class='liveana-card-title'><h3>".$article["title_articles"]."</h3></div>
                                 <div class='liveana-card-desc'><p>".$article["desc_articles"]."</p></div>
                             </div>
