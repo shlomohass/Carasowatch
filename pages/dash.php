@@ -80,6 +80,13 @@ switch ($Page->variable("load-view")) {
         //$cond_js_head[] = GPATH_LIB_JS."datetimepicker/bootstrap-datetimepicker.min.js";
     break; 
     case "liveana":
+        $cond_js_head[] = GPATH_LIB_JS."isotope/isotope.pkgd.js";
+        $cond_js_body[] = GPATH_LIB_JS."isotope/cells-by-column.js";
+        $cond_js_body[] = GPATH_LIB_JS."isotope/cells-by-row.js";
+        $cond_js_body[] = GPATH_LIB_JS."isotope/fit-columns.js";
+        $cond_js_body[] = GPATH_LIB_JS."isotope/horizontal.js";
+        $cond_js_body[] = GPATH_LIB_JS."isotope/masonry-horizontal.js";
+        $cond_js_body[] = GPATH_LIB_JS."isotope/packery-mode.pkgd.js";
     break;           
 }
 $Page->include_css($cond_css);
@@ -101,8 +108,8 @@ Trace::add_step(__FILE__,"Load page HTML");
 <?php
     include_once PATH_PAGES."dash".DS."page-struct-top.php";
 ?>
-<section class='container-fluid'>
-    <div class="row">
+<section class='container-fluid fix-totop'>
+    <div class="row" style="height:100%">
         <div class='dash-right-bar col-fixed-240'>
             <?php 
                 $tabs = array(

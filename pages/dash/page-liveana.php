@@ -4,148 +4,74 @@ Trace::add_step(__FILE__,"Loading Sub Page: dash -> makeform");
 
 /****************************** Load  Page Data ***********************************/
 Trace::add_step(__FILE__,"Loading Forms available");
-$Page->variable("all-forms-build", $Page::$conn->get("form_struct"));
-$Page->variable("all-blocks", $Page::$conn->get("blocks"));
-$Page->variable("all-forms-blocks", $Page::$conn->get("form_struct_blocks"));
-
+$Page->variable("all-targets", $Page::$conn->get("targets"));
+$Page->variable("all-articles-base", 
+                $Page::$conn->select(
+                    "articles",
+                    " * ",
+                    false,
+                    false,
+                    array('DESC',array("date_pub_uni_articles")),
+                    array(100)
+                )
+               );
 /****************************** Manipulate Some data ******************************/
-//Sort the index of the types available:
-if (!empty($Page->variable("all-forms-build"))) {
-    $temp_arr = $Page->variable("all-forms-build");
-    usort($temp_arr, function($a,$b){  return $a["form_struct_index"]-$b["form_struct_index"];});
-    $Page->variable("all-forms-build", $temp_arr);
-    unset($temp_arr);
+//Object to identify source
+$temp = array();
+foreach($Page->variable("all-targets") as $key => $target) {
+    $temp[$target["id_targets"]] = $target;
 }
-//Open jsons in the forms types:
-if (!empty($Page->variable("all-forms-build"))) {
-    $res = array();
-    foreach ($Page->variable("all-forms-build") as $key => $form) {
-        $res[$key] = $form;
-        
-        //Parse the json:
-        $res[$key]['form_struct_name'] = json_decode($form['form_struct_name'], true);
-        $res[$key]['form_struct_help'] = json_decode($form['form_struct_help'], true);
-        
-        //Set the correct display names and text:
-        if (isset($res[$key]['form_struct_name'][Lang::get_langCode().'-name'])) {
-            $res[$key]['form_struct_name']['parsed-name'] = $res[$key]['form_struct_name'][Lang::get_langCode().'-name'];
-            $res[$key]['form_struct_help']['parsed-desc'] = $res[$key]['form_struct_help'][Lang::get_langCode().'-desc'];
-
-        } elseif (isset($res[$key]['form_struct_name']['en-name'])) {
-            $res[$key]['form_struct_name']['parsed-name'] = $res[$key]['form_struct_name']['en-name'];
-            $res[$key]['form_struct_help']['parsed-desc'] = $res[$key]['form_struct_help']['en-desc'];
-        } else {
-            $res[$key]['form_struct_name']['parsed-name'] = "un-named";
-            $res[$key]['form_struct_help']['parsed-desc'] = "not-described";
-        }
-    }
-    $Page->variable("all-forms-build", $res);
-    unset($res);
-}
-//Open jsons in the blocks:
-if (!empty($Page->variable("all-blocks"))) {
-    $res = array();
-    foreach ($Page->variable("all-blocks") as $key => $block) {
-        $res[$key] = $block;
-        $res[$key]['block_name'] = json_decode($block['block_name'], true);
-        $res[$key]['block_help'] = json_decode($block['block_help'], true);
-    }
-    $Page->variable("all-blocks", $res);
-     unset($res);
-}
-//Sort the blocks by names:
-if (!empty($Page->variable("all-blocks"))) {
-    $temp_arr = $Page->variable("all-blocks");
-    usort($temp_arr, function($a,$b){ return strcmp($a["block_name"][Lang::get_langCode()."-name"], $a["block_name"][Lang::get_langCode()."-name"]); });
-    $Page->variable("all-blocks", $temp_arr);
-    unset($temp_arr);
-}
-//Group the blocks allowed on a form:
-if (!empty($Page->variable("all-forms-blocks"))) {
-    $res = array();
-    foreach($Page->variable("all-forms-blocks") as $key => $block) {
-        if (!isset($res[$block["struct_blocks_id_struct"]]))
-            $res[$block["struct_blocks_id_struct"]] = array();
-        $res[$block["struct_blocks_id_struct"]][] = array("block" => $block["struct_blocks_id_block"], "block-max" => $block["struct_blocks_max"]);
-    }
-    $Page->variable("all-forms-blocks", $res);
-    unset($res);
-}
+$Page->variable("all-targets", $temp);
 
 /****************************** Page Debugger Output ***********************************/
-Trace::reg_var("all-forms", $Page->variable("all-forms-build"));
-Trace::reg_var("all-blocks", $Page->variable("all-blocks"));
-Trace::reg_var("forms-blocks", $Page->variable("all-forms-blocks"));
+Trace::reg_var("all-targets", $Page->variable("all-targets"));
+Trace::reg_var("all-articles-base", $Page->variable("all-articles-base"));
 
 ?>
-<h2><?php Lang::P("page_makeform_title"); ?></h2>
+<h2><?php Lang::P("page_liveana_title"); ?></h2>
 <div class="container-fluid">
-    <div class="row dev">
-        <h4>בחר תבנית טופס</h4>
-        <div class="dash-make-select col-sm-12">
-            <div class="dash-make-select-types">
-                <?php
-                    //TODO: escape title {help} from html entities.
-                    foreach($Page->variable("all-forms-build") as $key => &$form) {
-                        //Skips disabled forms structures:
-                        if (isset($form['form_struct_enable']) && $form['form_struct_enable'] == 0) continue;
-                        //Output:
-                        echo "<div data-formid='".$form['form_struct_id']."' class='dash-make-form-type dev' title='".$form['form_struct_help']['parsed-desc']."'>".
-                                $form['form_struct_name']['parsed-name'].
-                                "</div>";
+    <div id="liveanacontrols" class="row">
+        <div class="col-sm-12 text-right">
+            <div class="btn-group" role="group" data-filter-group="source">
+              <?php
+                    foreach($Page->variable("all-targets") as $tarId => $tar) {
+                        echo "<button type='button' class='btn btn-default' data-filter='".$tar['name_targets']."'>".$tar['name_targets']."</button>";
                     }
-                ?>
+              ?>
+              <button type="button" class="btn btn-default is-checked"  data-filter="">הכל</button>
+            </div>
+        </div>
+        <br /><br />
+        <div class="col-sm-12 text-right">
+            <div class="btn-group" role="group" data-filter-group="past">
+              <button type="button" class="btn btn-default"  data-filter="pastonemonth">חודש</button>
+              <button type="button" class="btn btn-default"  data-filter="pastthreemonth">3 חודשים</button>
+              <button type="button" class="btn btn-default"  data-filter="pastsixmonth">6 חודשים</button>
+              <button type="button" class="btn btn-default"  data-filter="pastyear">שנה</button>
+              <button type="button" class="btn btn-default"  data-filter="thismonth">החודש</button>
+              <button type="button" class="btn btn-default"  data-filter="thisyear">השנה</button>
+              <button type="button" class="btn btn-default is-checked"  data-filter="">הכל</button>
             </div>
         </div>
     </div>
     <br />
-    <div>
-        <div class="row dev">
-            <div class="dash-make-view col-sm-4 hidden dev">
-                <h4>חלונית צפייה</h4>
-            </div>
-            <div class="dash-make-build col-sm-8 dev">
-                <?php
-                    foreach ($Page->variable("all-forms-build") as $form_key => $form) {
-                        if (isset($form['form_struct_enable']) && $form['form_struct_enable'] == 0) continue;
-                ?>
-                <form class="dash-make-formele-build hidden dev" data-formid="<?php echo $form['form_struct_id']; ?>">
-                    <h4>
-                        <?php 
-                            echo Lang::P("page_makereport_form_build_header", false)." - ".
-                                 $form["form_struct_name"]["parsed-name"];
-                        ?>
-                    </h4>
-                    <div class="dash-make-add-ele col-sm-12 dev">
-                        <div class="col-sm-3">
-                            <input type="button" value="הוסף" class="dash-make-formele-add btn btn-default btn-block" />
-                        </div>
-                        <div class="col-sm-9">
-                            <select name="form_add_type" class="form-control">
-                                <?php
-                                    $ava = $Page->in_variable("all-forms-blocks", $form["form_struct_id"]);
-                                    if (!empty($ava)) {
-                                        foreach($Page->variable("all-blocks") as $key => $block) {
-                                            //Will print only blocks that are attached to the form:
-                                            if ($Page->Func->search_multi_secondDim($ava, "block", $block["block_id"]) !== false) {
-                                                echo "<option value=".$block["block_id"].">".$block["block_name"][Lang::get_langCode()."-name"]."</option>";
-                                            }
-                                        }
-                                    } else {
-                                        //TODO: Handle the case that their are no blocks attached.
-                                    }
-                                ?>
-                            </select>
-                        </div>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="clearfix"></div>
-                </form>
-                <div class="clearfix"></div>
-                <?php
-                    }
-                ?>
-            </div>
+    <div class="container" style="width:100%; padding:0">
+        <div class="row-mans" style="width:100%; padding:0">
+            <div class="grid-sizer"></div>
+            <?php
+                foreach($Page->variable("all-articles-base") as $keyArticle => $article) {
+                    echo "<div class='item item-mans'>
+                            <div class='liveana-card'>
+                                <div class='liveana-source-tag' style='background-color:".$Page->in_variable("all-targets",$article["from_target_articles"],"use_tag_color").";'>".
+                                    $Page->in_variable("all-targets",$article["from_target_articles"],"name_targets")."</div>
+                                <div class='liveana-card-image' style='background-image:url(".str_replace("'", "%27", $article["image_articles"]).")'></div>
+                                <div class='liveana-card-meta'><span class='datepub'>".$article["date_pub_uni_articles"]."</span></div>
+                                <div class='liveana-card-title'><h3>".$article["title_articles"]."</h3></div>
+                                <div class='liveana-card-desc'><p>".$article["desc_articles"]."</p></div>
+                            </div>
+                           </div>";
+                }
+            ?>
         </div>
     </div>
 </div>
