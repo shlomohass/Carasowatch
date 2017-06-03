@@ -6,7 +6,7 @@ $Lang = array(
     "dic"  => array(
         //GENERAL:
         "gen_title_prefix"              => "CarasoWatch | ",
-        "gen_title_for_display"         => "ניתור מקוון",
+        "gen_title_for_display"         => "ניטור מקוון",
         "gen_desc"                      => "",
         "gen_keys"                      => "",
 
@@ -17,14 +17,14 @@ $Lang = array(
     
         //Dash nav right:
         "dash_nav_dashboard"            => "שולחן עבודה",
-        "dash_nav_setvalues"            => "הגדרת ערכים לניתור",
+        "dash_nav_setvalues"            => "הגדרת ערכים לניטור",
         "dash_nav_liveana"              => "ניתוח בזמן אמת",
     
         //Page Dashboard:
         "page_dash_title"                   => "שולחן עבודה",
         
         //Page setvalues:
-        "page_setvalues_title"              => "הגדרת ערכים לניתור",
+        "page_setvalues_title"              => "הגדרת ערכים לניטור",
     
         //Page liveana:
         "page_liveana_title"                => "ניתוח בזמן אמת",

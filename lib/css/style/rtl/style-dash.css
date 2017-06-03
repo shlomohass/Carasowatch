@@ -355,7 +355,62 @@ body {
     padding:10px;
     padding-top: 0;
 }
+/*************************************************************
+ * Page set values :
+ *************************************************************/
+.third-input-control {
+    width:33%;
+    display: inline-block;
+}
+.qua-input-control {
+    width:25%;
+    display: inline-block;
+}
+.small-input-control {
+    width:15%;
+    display: inline-block;
+}
+.half-input-control {
+    width:50%;
+    display: inline-block;
+}
+.twothird-input-control {
+    width:66%;
+    display: inline-block;
+}
+table.setvalues_table {
+    width: 100%;
+    margin-top: 15px;
+}
+table.setvalues_table tr {
+    
+}
+table.setvalues_table th {
+    border:1px solid #c1c1c1;
+    text-align: center;
+    padding-left: 5px;
+    padding-right: 5px;
+    background-color: #e6ddec;
+}
+table.setvalues_table td {
+    border:1px solid #c1c1c1;
+    padding-left: 5px;
+    padding-right: 5px;
+}
 
+/*************************************************************
+ * Tables helpers :
+ *************************************************************/
+.dis-table {
+    display: table;
+}
+.dis-table-row {
+    display: table-row;
+}
+.dis-table-cell {
+    display: table-cell;
+    padding:15px;
+}
 /*************************************************************
  * Spacers :
  *************************************************************/
@@ -539,4 +594,5 @@ ul.list-reset li {
 .mb25 { margin-bottom:25px; }
 .mb30 { margin-bottom:30px; }
 
+.curs { cursor: pointer; }
 .dev { background-color: rgba(100, 149, 237,.2) !important; }

@@ -1,306 +1,214 @@
 <?php
 
-Trace::add_step(__FILE__,"Loading Sub Page: admin -> inventory");
+Trace::add_step(__FILE__,"Loading Sub Page: Dash -> setvalues");
 
-//Load all amlah types:
-$Page->variable("all-am-types", $Page::$conn->get("amlah_type"));
-$Page->variable("all-am-groups", $Page::$conn->get("amlah_group"));
+/****************************** Load  Page Data ***********************************/
+Trace::add_step(__FILE__,"Loading Page Data");
 
-//Get user privs:
-$Page->variable("god", $User->is_god());
-$Page->variable("all-units-priv", $User->list_privs());
+$Page->variable("all-targets", $Page::$conn->get("targets"));
+
+
+/****************************** Manipulate Some data ******************************/
+Trace::add_step(__FILE__,"Manipulate Page Data");
+
+//Object to identify source
+$temp = array();
+foreach($Page->variable("all-targets") as $key => $target) {
+    $temp[$target["id_targets"]] = $target;
+}
+$Page->variable("all-targets", $temp);
+
+/****************************** Page Debugger Output ***********************************/
+Trace::reg_var("all-targets", $Page->variable("all-targets"));
+
+
+
+Trace::add_step(__FILE__,"Executing Page:");
 
 ?>
-<h2><?php Lang::P("page_inventory_title"); ?></h2>
-
-<table id="inventory-grid" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered display" width="100%">
-    <thead>
-        <tr>
-            <th><?php Lang::P("inven_table_header_id"); ?></th>
-            <th><?php Lang::P("inven_table_header_unit"); ?></th>
-            <th><?php Lang::P("inven_table_header_type"); ?></th>
-            <th><?php Lang::P("inven_table_header_ofunit"); ?></th>
-            <th><?php Lang::P("inven_table_header_place"); ?></th>
-            <th><?php Lang::P("inven_table_header_gen"); ?></th>
-            <th><?php Lang::P("inven_table_header_actions"); ?></th>
-        </tr>
-    </thead>
-</table>
-
-<div id="manage_sadac" class='modalformi'>
-    <div class="modalformi_wrap">
-        <div class='modalformi_head'><?php Lang::P("inven_modal_gen_header"); ?><span class="highlighted_name"></span></div>
-        <div class='modalformi_bodyFixed'>
-            <div class="add_sadac_form">
-                <h4><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                    <?php Lang::P("inven_modal_addam_header"); ?>
-                </h4>
-                <form id="add_sadac_form"class="form-inline">
-                  <div class="form-group">
-                    <label for="zid">
-                        <?php Lang::P("inven_modal_input_label_am_id"); ?>
-                      </label>
-                    <input type="text" class="form-control" id="zid" placeholder="<?php Lang::P("inven_modal_input_placeholder_am_id"); ?>">
-                  </div>
-                  <div class="form-group">
-                    <label for="ztype" style='margin-bottom:0px;'>
-                        <?php Lang::P("inven_modal_input_label_am_type"); ?>
-                        <select class="" dir='rtl' lang='he' style='width:150px;' id="ztype" placeholder="">
-                            <?php
-                                foreach ($Page->variable("all-am-groups") as $group) {
-                                    echo "<optgroup label='".$group["am_group_name"]."'>";
-                                    foreach ($Page->variable("all-am-types") as $type) {
-                                        if ($type["am_type_of_group"] === $group["am_group_id"]) {
-                                            echo "<option value='".$type["am_type_id"]."'>".$type["am_type_name"]."</option>";
-                                        }
-                                    }
-                                    echo "</optgroup>";
-                                }
-                            ?>
-                        </select>
-                    </label>
-                  </div>
-                  <div class="form-group">
-                    <label for="zyeud">
-                        <?php Lang::P("inven_modal_input_label_am_yeud"); ?>
-                    </label>
-                    <input type="email" class="form-control" id="zyeud" placeholder="<?php Lang::P("inven_modal_input_placeholder_am_yeud"); ?>">
-                  </div>
-                  <button type="button" class="btn btn-primary addambutton" onclick="window.manage_sadac.addToAmList(this);">
-                      <?php Lang::P("inven_modal_but_add_am"); ?>
-                  </button>
-                </form>
+<h2 style="margin-bottom:0;">
+    <?php Lang::P("page_setvalues_title"); ?>
+</h2>
+<div class="container-fluid">
+    <div id='setvalueform' class="dis-table" style="width: 98%; margin: 0 auto;">
+        <div class="dis-table-row">
+            <div class="dis-table-cell">
+                <div class="form-group">
+                    <label for="">שם קבוצה:</label>
+                    <input type="text" class="form-control" placeholder="הקלד שם קבוצה" />
+                </div>
+                <div class="form-group">
+                    <label for="" style="width:100%;">הגדר ערכים:</label>
+                    <input type="text" id="inputvalueadd" class="form-control twothird-input-control" id="" placeholder="הקלד ערך ובחר עדיפות" />
+                    <select id="inputvalueprio" class="form-control small-input-control">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                    <span id="newvalue_addvalue" class="glyphicon glyphicon-plus mr10 curs" aria-hidden="true"></span>
+                    <table class="setvalues_table" id="setvalues_values_table">
+                        <tr><th>ערכים</th><th>עדיפות</th><th>הסר</th></tr>
+                    </table>
+                </div>
             </div>
-            <br />
-            <h4><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
-                <?php Lang::P("inven_modal_amlist_header"); ?>
-            </h4>
-        </div>
-        <div class='modalformi_body'>
-            <div class='show_sadac'>
-                
+            <div class="dis-table-cell" style="border-right:solid 1px #d2ced4">
+                <div class="form-group">
+                    <label for="" style="width:100%;">החל על:</label>
+                    <select id="inputtargetuse" class="form-control twothird-input-control">
+                        <?php
+                            foreach($Page->variable("all-targets") as $tarId => $tar) {
+                                echo "<option value='".$tarId."'>".$tar["name_targets"]."</option>";  
+                            }
+                        ?>
+                    </select>
+                    <span id="newvalue_addtarget" class="glyphicon glyphicon-plus mr10 curs" aria-hidden="true"></span>
+                    <table class="setvalues_table" id="setvalues_target_table">
+                        <tr><th>מזהה</th><th>מטרה</th><th>הסר</th></tr>
+                    </table>
+                </div>
+                <div class="form-group">
+                    <label for="" style="width:100%;">נמענים להתראות:</label>
+                    <input type="text" class="form-control twothird-input-control text-left" id="inputrecipadd" placeholder="some@example.com" />
+                    <span id="newvalue_addrecip" class="glyphicon glyphicon-plus mr10 curs" aria-hidden="true"></span>
+                    <table class="setvalues_table" id="setvalues_recip_table">
+                        <tr><th>נמען</th><th>הסר</th></tr>
+                    </table>
+                </div>
             </div>
         </div>
-        <div class='modalformi_foot'>
-            <button type="button" class="btn btn-primary" onclick="window.manage_sadac.disManageModal()">
-                <?php Lang::P("inven_modal_but_close_ammodal"); ?>
-            </button>
+        <div class="dis-table-row">
+            <div class="dis-table-cell text-left" style="border-top:solid 1px #d2ced4; border-bottom:solid 1px #d2ced4">
+                <button type="button" class="btn btn-success third-input-control">צור</button>
+
+            </div>
+            <div class="dis-table-cell text-right" style="border-top:solid 1px #d2ced4; border-bottom:solid 1px #d2ced4">
+                <button type="button" class="btn btn-warning third-input-control">אפס</button>
+            </div>
         </div>
     </div>
-</div>
-<script type="text/javascript" language="javascript" >
-    var dataTable = $('#inventory-grid')
-        .on('xhr.dt', function ( e, settings, json, xhr ) {
-                
-                //Override actions by user priviliges:
-                if (typeof json.user_god !== 'undefined' && typeof json.user_priv !== 'undefined' && !json.user_god) {
-                    for (var i = 0; i < json.data.length; i++) {
-                        var u_id = json.data[i][0];
-                        var has_edit_units = false;
-                        var has_edit_am = false;
-                        for (var j = 0; j < json.user_priv.length; j++) {
-                            if (json.user_priv[j].priv_on_unit === u_id) {
-                                if (json.user_priv[j].user_can_edit_amlah == 1) {
-                                    has_edit_am = true;
-                                }
-                                if (json.user_priv[j].user_can_edit_units == 1) {
-                                    has_edit_units = true;
-                                }
-                            }
-                        }
-                        json.data[i][6] = "";
-                        if (has_edit_am) {
-                            json.data[i][6] += '<button class="manage_amlah_but" data-uid="' + u_id + '">' + window.langHook("inven_modal_but_edit_sadac") + '</button>';
-                        }
-                        if (has_edit_units) {
-                            json.data[i][6] += '<button>' + window.langHook("inven_modal_but_erase_unit") + '</button>' + 
-                                               '<button>' + window.langHook("inven_modal_but_edit_unit") + '</button>';
-                        }
-                    }
-                }
-                if (typeof json.user_god !== 'undefined' && json.user_god) {
-                    for (var i = 0; i < json.data.length; i++) {
-                        var u_id = json.data[i][0];
-                        json.data[i][6] = '<button class="manage_amlah_but" data-uid="' + u_id + '">' + window.langHook("inven_modal_but_edit_sadac") + '</button>'+
-                                          '<button>' + window.langHook("inven_modal_but_erase_unit") + '</button>' + 
-                                          '<button>' + window.langHook("inven_modal_but_edit_unit") + '</button>';
-                    }
-                }
-            
-            }).DataTable( {
-                "processing": true,
-                "serverSide": true,
-                "language": {
-                    paginate: {
-                        previous: '‹ הקודם',
-                        next:     'הבא ›'
-                    },
-                    aria: {
-                        paginate: {
-                            previous: 'Previous',
-                            next:     'Next'
-                        }
-                    },
-                    info: "מציג _START_ עד _END_ מתוך _TOTAL_ רשומות",
-                    lengthMenu: "הצג _MENU_ רשומות",
-                    search:         "חפש: ",
-                },
-                columnDefs: [
-                    {bSortable: false, targets: [-1,-2]} 
-                ],
-                "ajax":{
-                    url : "index.php",
-                    type: "post",
-                    data: function ( d ) {
-                            return $.extend( {}, d, {
-                                    req:"api",
-                                    token:$("#pagetoken").val(),
-                                    type:"listmanageunits"
-                                } ); 
-                    },
-                    error: function(err, ms){  // error handling
-                        console.log("error",err);
-                    }
-                }
-            } );
-    
-    window["manage_sadac"] = {
-        
-        loadManageModal : function($ele) {
-            
-            var $modal = $("#manage_sadac");
-            
-            //Unit Id:
-            var unitId = parseInt($ele.closest('tr').find('td').eq(0).text());
-            var unitName = $ele.closest('tr').find('td').eq(1).text();
-            
-            //Set Title:
-            $modal.find('.highlighted_name').text(unitName);
-            
-            //Set add but id:
-            $modal.find('.addambutton').data('uid', unitId);
-            
-            //Load Amlah list:
-            window.manage_sadac.refreshManageAmlahList(
-                unitId,
-                function() {
-                    $("#manage_sadac").fadeIn();
-                }
-            );
-        },
-        disManageModal : function() {
-            $("#manage_sadac").fadeOut();
-        },
-        getAmlistHtmlRepresentation : function(obj, priv) {
-            prev_group = "";
-            var retHtml = "<table class='amlist_quick_view'><tr><th>" + window.langHook("header_table_units_amnum") + "</th>" + 
-                                                                "<th>" + window.langHook("header_table_units_amtype") + "</th>" + 
-                                                                "<th>" + window.langHook("header_table_units_amyeud") + "</th>" + 
-                                                                "<th>" + window.langHook("header_table_units_amactions") + "</th></tr>";
-            if (obj.length > 0) {
-                for (var i = 0; i < obj.length; i++) {
-                    if (obj[i].am_group_name !== prev_group) {
-                        prev_group = obj[i].am_group_name;
-                        retHtml += "<tr><td colspan='4' class='amlist_amgroup_row'>" + prev_group + "</td></tr>";
-                    }
-                    retHtml += "<tr><td>" + obj[i].am_list_number + "</td><td>" + obj[i].am_type_name + "</td><td>" + obj[i].am_list_yeud + "</td>";
-                    if (priv) {
-                        retHtml += "<td><span class='glyphicon glyphicon-trash' onclick='' data-amid='" + obj[i].am_list_id + "'></span>" + 
-                                    "<span class='glyphicon glyphicon-pencil' onclick='' data-amid='" + obj[i].am_list_id + "'></span></td></tr>";
-                    } else {
-                        retHtml += "<td></td></tr>";
-                    }
-                }
-            } else {
-                retHtml += "<tr><td colspan='4'>" + window.langHook("header_table_units_amnodata") + "</td></tr>";
-            }
-            retHtml += "</table>";
-            return retHtml;
-        },
-        refreshManageAmlahList : function(unitId, callAfter) {
-            
-            var data = {
-                req     : "api",
-                token   : $("#pagetoken").val(),
-                type    : "listAmlahOfUnit",
-                unit    : unitId
-            };
-            $.ajax({
-                url: 'index.php',  //Server script to process data
-                type: 'POST',
-                data: data,
-                dataType: 'json',             
-                beforeSend: function() {
-                },
-                success: function(response) {
-                    if (
-                        typeof response === 'object' && 
-                        typeof response.code !== 'undefined' &&
-                        response.code == "202"
-                    ) {
-                        $("#manage_sadac").find(".modalformi_body").html(
-                            window.manage_sadac.getAmlistHtmlRepresentation(response.results.amlist, response.results.editPriv)
-                        );
-                        callAfter();
-                    } else {
-                        window.alertModal("שגיאה",window.langHook("err_load_units_amlist"));
-                    }
-                },
-                error: function(xhr, ajaxOptions, thrownError){
-                    console.log(thrownError);
-                    window.alertModal("שגיאה",window.langHook("err_load_units_amlist"));
-                },
-            });
-        },
-        addToAmList : function(t) {
-            var $ele = $(t);
-            var $form = $ele.closest('form');
-            var data = {
-                 req:       "api",
-                 token:     $("#pagetoken").val(),
-                 type:      "addamtounit",
-                 unit_id:   $ele.data('uid'),
-                 amnum:     $form.find("#zid").val(),
-                 amtype:    $form.find("#ztype").val(),
-                 amyeud:    $form.find("#zyeud").val()
-            };
-            $.ajax({
-                url: 'index.php',  //Server script to process data
-                type: 'POST',
-                data: data,
-                dataType: 'json',             
-                beforeSend: function() {
-                    $ele.prop("disabled", true);
-                },
-                success: function(response) {
-                    if (
-                        typeof response === 'object' && 
-                        typeof response.code !== 'undefined' &&
-                        response.code == "202"
-                    ) {
-                        $form.find("#zid").val("");
-                        $form.find("#zyeud").val("");
-                        window.manage_sadac.refreshManageAmlahList($ele.data('uid'),function(){});
-                    } else {
-                        console.log("fail",response);
-                        window.alertModal("שגיאה",window.langHook("err_save_units_amlist"));
-                    }
-                    $ele.prop("disabled", false);
-                },
-                error: function(xhr, ajaxOptions, thrownError){
-                    $ele.prop("disabled", false);
-                    console.log(thrownError);
-                    window.alertModal("שגיאה",window.langHook("err_save_units_amlist"));
-                },
-            });
-        }
-    };
-    
-    //Manage Sadac:
-    $("#ztype").select2();
-    
-    $(document).on("click",".manage_amlah_but",function(){
-        window.manage_sadac.loadManageModal($(this));
-    });
 
+    <br />
+    <div style="width:100%; padding:0" class="dev">
+        שדגשדגשג
+    </div>
+</div>
+<div class="clearfix"></div>
+
+<script type="text/javascript" language="javascript" >
+
+/*** SetValue Form Handles: ***/
+(function($, window, document) {
+    
+    var $theSetValueForm = $("#setvalueform");
+    if ($theSetValueForm.length) {
+        
+        //Triggers:
+        var $addValueBut = $('#newvalue_addvalue');
+        var $addTargetBut = $('#newvalue_addtarget');
+        var $addRecipBut = $('#newvalue_addrecip');
+        
+        //Form elemnts:
+        var $invalueadd = $("#inputvalueadd");
+        var $invalueprio = $("#inputvalueprio");
+        var $intargetuse = $("#inputtargetuse");
+        var $inrecipaddress = $("#inputrecipadd");
+        
+        //Tables:
+        var $tabvalue = $("#setvalues_values_table");
+        var $tabtarget = $("#setvalues_target_table");
+        var $tabrecip = $("#setvalues_recip_table");
+        
+        //Add value:
+        $addValueBut.click(function(){
+            var valadd = $invalueadd.val().trim(),
+                valprio = $invalueprio.val();
+            //Validate empty:
+            if (valadd === "") { console.log("Error:1"); $invalueadd.blink(3, 100, "#ff9696"); return; }
+            //Validate already created:
+            var validateDual = true;
+            $tabvalue.find("td.stored_value").each(function(i, e){
+                if ($(e).text() === valadd) { 
+                    validateDual = false;
+                    $(e).blink(3, 100, "#ff9696");
+                }
+            });
+            if (!validateDual) { console.log("Error:2"); return; }
+            //Add to table:
+            $tabvalue.append(
+                "<tr><td class='stored_value'>" + valadd + "</td>" +
+                "<td>" + valprio + "</td>" +
+                "<td class='text-center'><span class='glyphicon glyphicon-remove curs remove-values' aria-hidden='true'></span></td></tr>"
+            )
+        });
+        
+        //Add target:
+        $addTargetBut.click(function(){
+            var taraddname = $intargetuse.find("option:selected").text().trim(),
+                taraddid = $intargetuse.val();
+            
+            //Validate empty:
+            if (taraddname === "") { console.log("Error:1"); $intargetuse.blink(3, 100, "#ff9696"); return; }
+            
+            //Validate already created:
+            var validateDual = true;
+            $tabtarget.find("td.stored_value").each(function(i, e){
+                if ($(e).text() == taraddid) { 
+                    validateDual = false;
+                    $(e).blink(3, 100, "#ff9696");
+                }
+            });
+            if (!validateDual) { console.log("Error:2"); return; }
+            //Add to table:
+            $tabtarget.append(
+                "<tr><td class='stored_value'>" + taraddid + "</td>" +
+                "<td>" + taraddname + "</td>" +
+                "<td class='text-center'><span class='glyphicon glyphicon-remove curs remove-values' aria-hidden='true'></span></td></tr>"
+            )
+        });
+        
+        //Add recip:
+        $addRecipBut.click(function(){
+            var recipaddress = $inrecipaddress.val().trim();
+            
+            //Validate email:
+            if (!$inrecipaddress.checkEmail()) { console.log("Error:1"); $inrecipaddress.blink(3, 100, "#ff9696"); return; }
+            
+            //Validate already created:
+            var validateDual = true;
+            $tabrecip.find("td.stored_value").each(function(i, e){
+                if ($(e).text() == recipaddress) { 
+                    validateDual = false;
+                    $(e).blink(3, 100, "#ff9696");
+                }
+            });
+            if (!validateDual) { console.log("Error:2"); return; }
+            //Add to table:
+            $tabrecip.append(
+                "<tr><td class='stored_value'>" + recipaddress + "</td>" +
+                "<td class='text-center'><span class='glyphicon glyphicon-remove curs remove-values' aria-hidden='true'></span></td></tr>"
+            )
+        });
+        
+        //Removers table:
+        $(document).on("click",".remove-values", function(){
+           // TODO do some studd here
+           console.log("remove"); 
+            var $this = $(this);
+            var $row = $this.closest('tr');
+            if ($row.length) {
+                $row.fadeOut(function(){
+                   $(this).remove(); 
+                });
+            }
+        });
+    }
+    
+}(jQuery, window, document));
 </script>

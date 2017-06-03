@@ -21,6 +21,7 @@ $Page->include_css(array(
 Trace::add_step(__FILE__,"Define js libs for head section");
 $Page->include_js(array(
     GPATH_LIB_JS."jquery-1.12.3.min.js",
+    GPATH_LIB_JS."jquery.color-2.1.2.min.js",
     GPATH_LIB_STYLE."bootstrap/js/bootstrap.min.js",
     GPATH_LIB_JS."datatables/jquery.dataTables.js",
     GPATH_LIB_JS."datatables/dataTables.bootstrap.js",
