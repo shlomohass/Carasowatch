@@ -35,7 +35,7 @@ Trace::add_step(__FILE__,"Executing Page:");
             <div class="dis-table-cell">
                 <div class="form-group">
                     <label for="">שם קבוצה:</label>
-                    <input type="text" class="form-control" placeholder="הקלד שם קבוצה" />
+                    <input type="text" id="inputnamegroup" class="form-control" placeholder="הקלד שם קבוצה" />
                 </div>
                 <div class="form-group">
                     <label for="" style="width:100%;">הגדר ערכים:</label>
@@ -85,11 +85,11 @@ Trace::add_step(__FILE__,"Executing Page:");
         </div>
         <div class="dis-table-row">
             <div class="dis-table-cell text-left" style="border-top:solid 1px #d2ced4; border-bottom:solid 1px #d2ced4">
-                <button type="button" class="btn btn-success third-input-control">צור</button>
+                <button id="setvalues_create_new" type="button" class="btn btn-success third-input-control">צור</button>
 
             </div>
             <div class="dis-table-cell text-right" style="border-top:solid 1px #d2ced4; border-bottom:solid 1px #d2ced4">
-                <button type="button" class="btn btn-warning third-input-control">אפס</button>
+                <button id="setvalues_reset_form" type="button" class="btn btn-warning third-input-control">אפס</button>
             </div>
         </div>
     </div>
@@ -119,6 +119,7 @@ Trace::add_step(__FILE__,"Executing Page:");
         var $invalueprio = $("#inputvalueprio");
         var $intargetuse = $("#inputtargetuse");
         var $inrecipaddress = $("#inputrecipadd");
+        var $innamegroup = $("#inputnamegroup");
         
         //Tables:
         var $tabvalue = $("#setvalues_values_table");
@@ -207,6 +208,66 @@ Trace::add_step(__FILE__,"Executing Page:");
                    $(this).remove(); 
                 });
             }
+        });
+        
+        //Reset button:
+        $("#setvalues_reset_form").click(function(){
+            //Reset name:
+            $innamegroup.val("");
+            //Reset values:
+            $invalueadd.val("");
+            $tabvalue.find("td.stored_value").each(function(i,e){ $(e).closest("tr").remove(); });
+            //Reset target:
+            $tabtarget.find("td.stored_value").each(function(i,e){ $(e).closest("tr").remove(); });
+            //Reset recip:
+            $inrecipaddress.val("")
+            $tabrecip.find("td.stored_value").each(function(i,e){ $(e).closest("tr").remove(); });
+        });
+        
+        //Create button:
+        $("#setvalues_create_new").click(function(){
+            var $but = $(this);
+            //Disable button:
+            $but.prop("disabled",true);
+            //Get data:
+            var data = {
+                req:       "api",
+                token:     $("#pagetoken").val(),
+                type:      "loadunittoreportscreen",
+                
+                groupname : $innamegroup.val().trim(),
+                values    : "",
+                targets   : "",
+                notify    : ""
+            }
+            //save to server:
+            $.ajax({
+                url: 'index.php',  //Server script to process data
+                type: 'POST',
+                data: data,
+                dataType: 'json',
+                beforeSend: function() {
+                },
+                complete: function() {
+                    $but.prop("disabled",false);
+                },
+                success: function(response) {
+                    if (
+                        typeof response === 'object' && 
+                        typeof response.code !== 'undefined' &&
+                        response.code == "202"
+                    ) {
+
+                    } else {
+
+                    }
+                },
+                error: function(xhr, ajaxOptions, thrownError){
+                    console.log(thrownError);
+                    
+                    window.alertModal("שגיאה",window.langHook("makerep_error_savenew_loc"));
+                },
+            });
         });
     }
     
