@@ -39,19 +39,61 @@ if ( $inputs['type'] !== '' ) {
         break;
             
         /**** Set new Part: ****/
-        case "loadtpl":
+        case "createnewgroupvalue":
             
+            /*
+                groupname : $innamegroup.val().trim(),
+                values    : getformvalues("values"),
+                targets   : getformvalues("targets"),
+                notify    : getformvalues("recipients")
+                
+                
+
+array(1) {
+  [0]=>
+  array(2) {
+    ["text"]=>
+    string(5) "adsad"
+    ["impact"]=>
+    string(1) "1"
+  }
+}
+array(1) {
+  [0]=>
+  array(1) {
+    ["id"]=>
+    string(1) "4"
+  }
+}
+array(1) {
+  [0]=>
+  array(1) {
+    ["email"]=>
+    string(15) "asdasd@kjhf.com"
+  }
+}
+                
+                
+                
+                
+                
+            */
             //Synth needed:
-            $get = $Api->Func->synth($_REQUEST, array('mode','which'),false);
+            $get = $Api->Func->synth($_REQUEST, array('groupname','values', 'targets', 'notify'),false);
             
             //Validation input:
             if (
-                empty($get['mode']) || 
-                !is_numeric($get['which']) ||
-                ($get['mode'] != "show" && $get['mode'] != "build")
+                empty($get['groupname']) || 
+                empty($get['values']) || 
+                empty($get['targets'])
             ) {
                 $Api->error("not-legal");
             }
+            
+            var_dump($get['groupname']);
+            var_dump($get['values']);
+            var_dump($get['targets']);
+            var_dump($get['notify']);
             
             //Logic:
             $Op = new Operation();

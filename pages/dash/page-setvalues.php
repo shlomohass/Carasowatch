@@ -199,8 +199,6 @@ Trace::add_step(__FILE__,"Executing Page:");
         
         //Removers table:
         $(document).on("click",".remove-values", function(){
-           // TODO do some studd here
-           console.log("remove"); 
             var $this = $(this);
             var $row = $this.closest('tr');
             if ($row.length) {
@@ -224,6 +222,47 @@ Trace::add_step(__FILE__,"Executing Page:");
             $tabrecip.find("td.stored_value").each(function(i,e){ $(e).closest("tr").remove(); });
         });
         
+        
+        //Grab all form Values and pack them:
+        // who -> values, targets, recipients
+        function getformvalues(who) {
+            var res = [], $who;
+            switch (who) {
+                case "values":
+                    $who = $("#setvalues_values_table td.stored_value");
+                    break;
+                case "targets":
+                    $who =  $("#setvalues_target_table td.stored_value");
+                    break;
+                case "recipients":
+                    $who =  $("#setvalues_recip_table td.stored_value");
+                    break;
+            }
+            $who.each(function(i, e) { 
+                var $e = $(e);
+                switch (who) {
+                case "values":
+                        res.push({
+                            text    : $e.text().trim(),
+                            impact  : parseInt($e.next('td').text().trim())
+                        });
+                        break;
+                    case "targets":
+                        res.push({
+                            id    : parseInt($e.text().trim())
+                        });
+                        break;
+                    case "recipients":
+                        res.push({
+                            email    : $e.text().trim()
+                        });
+                        break;
+                }
+                
+            });
+            return res;
+        }
+        
         //Create button:
         $("#setvalues_create_new").click(function(){
             var $but = $(this);
@@ -233,19 +272,22 @@ Trace::add_step(__FILE__,"Executing Page:");
             var data = {
                 req:       "api",
                 token:     $("#pagetoken").val(),
-                type:      "loadunittoreportscreen",
+                type:      "createnewgroupvalue",
                 
                 groupname : $innamegroup.val().trim(),
-                values    : "",
-                targets   : "",
-                notify    : ""
+                values    : getformvalues("values"),
+                targets   : getformvalues("targets"),
+                notify    : getformvalues("recipients")
             }
+
+            console.log(data);
+            
             //save to server:
             $.ajax({
                 url: 'index.php',  //Server script to process data
                 type: 'POST',
                 data: data,
-                dataType: 'json',
+                //dataType: 'json',
                 beforeSend: function() {
                 },
                 complete: function() {
@@ -257,15 +299,16 @@ Trace::add_step(__FILE__,"Executing Page:");
                         typeof response.code !== 'undefined' &&
                         response.code == "202"
                     ) {
-
+                        console.log(response);
+                        
                     } else {
-
+                        console.log(response);
+                        window.alertModal("שגיאה",window.langHook("setvalues_error_set_new_group"));
                     }
                 },
                 error: function(xhr, ajaxOptions, thrownError){
                     console.log(thrownError);
-                    
-                    window.alertModal("שגיאה",window.langHook("makerep_error_savenew_loc"));
+                    window.alertModal("שגיאה",window.langHook("setvalues_error_set_new_group"));
                 },
             });
         });
