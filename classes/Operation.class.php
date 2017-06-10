@@ -12,33 +12,40 @@ class Operation {
         Trace::add_trace('construct class',__METHOD__);  
     }
     
-    /* Get all the saved location list:
-     * @param $conn -> DB connection.
-     * @return Array()
+    /* Creates a new group value:
+     * @param $conn         -> DB connection.
+     * @param $name         -> String { group name }.
+     * @param $values       -> Array { the values to be stored }.
+     * @param $targets      -> Array { the values to be stored }.
+     * @param $notify       -> Array { the values to be stored }.
+     * @param $user         -> Int { user id }.
+     * @return Integer : 
+     *        0 { Success      }
+     *        1 { Duplicate    } 
+     *        2 { Insert Error }
      */
-    public function get_tpl_html($conn, $mode, $which) {
+    public function create_new_valuegroup($conn, $name, $values, $targets, $notify, $user) {
+        $name = strtolower($name);
+        
+        //Validate duplicates
         $block = $conn->select(
-            "blocks", 
-            " * ",
-            array(array("block_id", "=", $which)),
+            "valuegroup", 
+            "1",
+            array(array("name_valuegroup", "=", $name)),
             false,
             false,
             array(1)
         );
-        if (empty($block) || !isset($block[0]) || !isset($block[0]["block_builder_object"])) return false;
+        if (!empty($block)) return 1;
         $vars = array(
-            "lang" => Lang::get_langCode(),
-            "type" => $mode,
-            "wrap"   => $block[0]["block_wrap_class"]
+            "name_valuegroup"    => $name,
+            "values_valuegroup"  => json_encode($values),
+            "targets_valuegroup" => json_encode($targets),
+            "notify_valuegroup"  => json_encode($notify),
+            "added_by_valuegroup" => $user,
+            "added_date_valuegroup" => "NOW()",
         );
-        ob_start();
-        include(
-            GPATH_TPL.
-            $block[0]["block_builder_object"].
-            ".php"
-        );
-        $result = ob_get_clean();
-        return (!empty($result))?$result:false;
+        return ($conn->insert_safe("valuegroup", $vars))?0:2;
     }
     
     /* Get all the saved parts catalog:

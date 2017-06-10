@@ -6,7 +6,8 @@ Trace::add_step(__FILE__,"Loading Sub Page: Dash -> setvalues");
 Trace::add_step(__FILE__,"Loading Page Data");
 
 $Page->variable("all-targets", $Page::$conn->get("targets"));
-
+$Page->variable("all-users", $Page::$conn->get("users"));
+$Page->variable("all-valuegroups", $Page::$conn->get("valuegroup"));
 
 /****************************** Manipulate Some data ******************************/
 Trace::add_step(__FILE__,"Manipulate Page Data");
@@ -20,8 +21,8 @@ $Page->variable("all-targets", $temp);
 
 /****************************** Page Debugger Output ***********************************/
 Trace::reg_var("all-targets", $Page->variable("all-targets"));
-
-
+Trace::reg_var("all-users", $Page->variable("all-users"));
+Trace::reg_var("all-valuegroups", $Page->variable("all-valuegroups"));
 
 Trace::add_step(__FILE__,"Executing Page:");
 
@@ -95,8 +96,52 @@ Trace::add_step(__FILE__,"Executing Page:");
     </div>
 
     <br />
-    <div style="width:100%; padding:0" class="dev">
-        שדגשדגשג
+    <div style="width:100%; padding:0" class="">
+        
+        <?php
+            
+            foreach($Page->variable("all-valuegroups") as $key => $group) {
+                $vals = [];
+                $targets = [];
+                $notifyer = [];
+                foreach (json_decode($group["values_valuegroup"], true) as $valkey => $val) {
+                    $vals[] = $val["text"]." (".$val["impact"]."), &nbsp;";
+                }
+                foreach (json_decode($group["targets_valuegroup"], true) as $valkey => $val) {
+                    Trace::reg_var("testval", $Page->in_variable("all-targets", $val["id"]));
+                    $targets[] = $Page->in_variable("all-targets", $val["id"] ,"name_targets").", &nbsp;";
+                }
+                foreach (json_decode($group["notify_valuegroup"], true) as $valkey => $val) {
+                    $notifyer[] = $val["email"].", &nbsp;";
+                }
+                echo "<h4>".$group["name_valuegroup"]."</h4>";
+                echo "<table class='setvalues_table m0i'>"
+                        ."<tr>"
+                        ."<th>פעולות</th>"
+                        ."<th>ערכים</th>"
+                        ."<th>יעדים</th>"
+                        ."<th>הודעה ל</th>"
+                    ."</tr>";
+                echo "<tr>"
+                    ."<td class='p10'>"
+                        ."<span class='glyphicon glyphicon-trash ml10 curs' aria-hidden='true'></span>"
+                        ."<span class='glyphicon glyphicon-edit curs' aria-hidden='true'></span>"
+                    ."</td>"
+                    ."<td>".implode($vals)."</td>"
+                    ."<td>".implode($targets)."</td>"
+                    ."<td>".implode($notifyer)."</td>"
+                    ."</tr>";
+                echo "</table>";
+                echo "<span class='group_notice_by'>יוצר: ".
+                            $Page->Func->search_by_value_pair(
+                                $Page->variable("all-users"), 
+                                "id", 
+                                $group["added_by_valuegroup"], 
+                                "username"
+                            )
+                        ." בתאריך ".$group["added_date_valuegroup"]."</span>";
+            }
+        ?>
     </div>
 </div>
 <div class="clearfix"></div>
@@ -286,8 +331,8 @@ Trace::add_step(__FILE__,"Executing Page:");
             $.ajax({
                 url: 'index.php',  //Server script to process data
                 type: 'POST',
-                data: data,
-                //dataType: 'json',
+                data:  data,
+                dataType: 'json',
                 beforeSend: function() {
                 },
                 complete: function() {

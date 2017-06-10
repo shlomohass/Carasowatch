@@ -22,7 +22,7 @@ class Api extends Basic {
         "not-loged"     => "107",
         "not-legal"     => "108",
         "no-priv"       => "109",
-        "tpl-err"       => "110"
+        "duplicate"     => "110"
     );
     private $suc_codes = array(
         "general"       => "201",

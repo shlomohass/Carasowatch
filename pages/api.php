@@ -38,46 +38,9 @@ if ( $inputs['type'] !== '' ) {
             
         break;
             
-        /**** Set new Part: ****/
+        /**** Set new Group value to db: ****/
         case "createnewgroupvalue":
             
-            /*
-                groupname : $innamegroup.val().trim(),
-                values    : getformvalues("values"),
-                targets   : getformvalues("targets"),
-                notify    : getformvalues("recipients")
-                
-                
-
-array(1) {
-  [0]=>
-  array(2) {
-    ["text"]=>
-    string(5) "adsad"
-    ["impact"]=>
-    string(1) "1"
-  }
-}
-array(1) {
-  [0]=>
-  array(1) {
-    ["id"]=>
-    string(1) "4"
-  }
-}
-array(1) {
-  [0]=>
-  array(1) {
-    ["email"]=>
-    string(15) "asdasd@kjhf.com"
-  }
-}
-                
-                
-                
-                
-                
-            */
             //Synth needed:
             $get = $Api->Func->synth($_REQUEST, array('groupname','values', 'targets', 'notify'),false);
             
@@ -90,25 +53,28 @@ array(1) {
                 $Api->error("not-legal");
             }
             
-            var_dump($get['groupname']);
-            var_dump($get['values']);
-            var_dump($get['targets']);
-            var_dump($get['notify']);
-            
             //Logic:
             $Op = new Operation();
-            $theObject = $Op->get_tpl_html($Api::$conn, $get['mode'], $get['which']);
+            $theObject = $Op->create_new_valuegroup(
+                $Api::$conn, 
+                $get['groupname'],
+                $get['values'],
+                $get['targets'],
+                $get['notify'],
+                $User->user_info
+            );
 
             //Output:
-            if (!empty($theObject)) {
+            if ($theObject === 0) {
                $results = array(
-                   "html" => preg_replace( "/\r|  |\t|\n/", "", $theObject)
+                   "groupId" => $Api::$conn->lastid()
                 );
                 $success = "with-results";
+            } elseif ($theObject === 1) {
+                $Api->error("duplicate");
             } else {
-                $Api->error("tpl-err");
+                $Api->error("query");
             }
-            
         break;
             
         //Unknown type - error:

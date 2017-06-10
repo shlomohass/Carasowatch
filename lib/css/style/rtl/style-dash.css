@@ -397,6 +397,11 @@ table.setvalues_table td {
     padding-left: 5px;
     padding-right: 5px;
 }
+span.group_notice_by {
+    font-size: .7em;
+    color: #888888;
+    padding-right: 5px;
+}
 
 /*************************************************************
  * Tables helpers :
@@ -561,6 +566,14 @@ ul.list-reset li {
 .m20 { margin:20px; }
 .m25 { margin:25px; }
 .m30 { margin:30px; }
+
+.m0i { margin:0px !important; }
+.m5i { margin:5px !important; }
+.m10i { margin:10px !important; }
+.m15i { margin:15px !important; }
+.m20i { margin:20px !important; }
+.m25i { margin:25px !important; }
+.m30i { margin:30px !important; }
 
 .ml0 { margin-left:0px; }
 .ml5 { margin-left:5px; }
