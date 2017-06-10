@@ -12,7 +12,7 @@ $Page->variable("all-articles-base",
                     false,
                     false,
                     array('DESC',array("date_pub_uni_articles")),
-                    array(100)
+                    array(300)
                 )
                );
 /****************************** Manipulate Some data ******************************/

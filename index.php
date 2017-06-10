@@ -1,7 +1,7 @@
 <?php 
 
 ini_set('max_execution_time', 0);
-define('PREVENT_OUTPUT', false );  
+define('PREVENT_OUTPUT', true );  
 
 require_once 'conf.php';
 require_once PATH_CLASSES.'Trace.class.php';
