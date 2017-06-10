@@ -21,8 +21,6 @@ $Oper = isset($_REQUEST["save"]) ? true : false;
     <meta name="description" content="" />
     <meta name="keywords" content="" />
     <meta name="author" content="SM projects" />
-
-    <title>CarasoWatch | ניתור מקוון</title>
 </head>
 <body>
 <?php
@@ -30,15 +28,13 @@ $Oper = isset($_REQUEST["save"]) ? true : false;
 
 Trace::add_step(__FILE__,"Create objects");
 $Page = new Page( $conf );
-echo date("Y-M-d")."<br /><br />";
-echo iconv("windows-1255","utf-8", strftime('%e %B %Y'));
 /*************************** Load Assets *********************************/
 
 $Page->variable("all-articles", $Page::$conn->get("articles"));
 $tarCount = count($Page->variable("all-articles"));
 echo "<table>";
 for ($i = 0; $i < $tarCount; $i++) {
-    
+    if (!empty($Page->in_variable("all-articles", $i, "date_pub_uni_articles"))) continue;
     $id            = $Page->in_variable("all-articles", $i, "id_articles");
     $strdate       = $Page->in_variable("all-articles", $i, "date_pub_articles");
     $dateOldFormat = $Page->in_variable("all-articles", $i, "date_used_format_articles");
