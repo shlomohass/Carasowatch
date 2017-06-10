@@ -104,23 +104,24 @@ Trace::add_step(__FILE__,"Executing Page:");
                 $vals = [];
                 $targets = [];
                 $notifyer = [];
+                $ena = $group["enabled_valuegroup"] == '0'? false : true;
                 foreach (json_decode($group["values_valuegroup"], true) as $valkey => $val) {
                     $vals[] = $val["text"]." (".$val["impact"]."), &nbsp;";
                 }
                 foreach (json_decode($group["targets_valuegroup"], true) as $valkey => $val) {
-                    Trace::reg_var("testval", $Page->in_variable("all-targets", $val["id"]));
                     $targets[] = $Page->in_variable("all-targets", $val["id"] ,"name_targets").", &nbsp;";
                 }
                 foreach (json_decode($group["notify_valuegroup"], true) as $valkey => $val) {
                     $notifyer[] = $val["email"].", &nbsp;";
                 }
-                echo "<h4>".$group["name_valuegroup"]."</h4>";
+                echo "<h4 class='mt20'>".$group["name_valuegroup"]."</h4>";
                 echo "<table class='setvalues_table m0i'>"
                         ."<tr>"
-                        ."<th>פעולות</th>"
+                        ."<th style='width:52px;'>פעולות</th>"
                         ."<th>ערכים</th>"
                         ."<th>יעדים</th>"
                         ."<th>הודעה ל</th>"
+                        ."<th style='width:81px;'>פעיל</th>"
                     ."</tr>";
                 echo "<tr>"
                     ."<td class='p10'>"
@@ -130,6 +131,15 @@ Trace::add_step(__FILE__,"Executing Page:");
                     ."<td>".implode($vals)."</td>"
                     ."<td>".implode($targets)."</td>"
                     ."<td>".implode($notifyer)."</td>"
+                    ."<td>"
+                        ."<div class='onoffswitch' style='direction: ltr !important;'>"
+                          ."<input type='checkbox' class='onoffswitch-checkbox addonoff togglegroupena'  id='myonoffswitch".$key."' ".($ena ? "checked='checked'" : "")." data-groupid='".$group["id_valuegroup"]."'/>"
+                          ."<label class='onoffswitch-label m0i' for='myonoffswitch".$key."'>"
+                            ."<span class='onoffswitch-inner'></span>"
+                            ."<span class='onoffswitch-switch'></span>"
+                         ."</label>"
+                        ."</div>"
+                    ."</td>"
                     ."</tr>";
                 echo "</table>";
                 echo "<span class='group_notice_by'>יוצר: ".
@@ -151,6 +161,52 @@ Trace::add_step(__FILE__,"Executing Page:");
 /*** SetValue Form Handles: ***/
 (function($, window, document) {
     
+    //Add switches:
+    $('input.addonoff').onoff();
+    
+    //Switches Disable:
+    $('input.togglegroupena').on("change", function() {
+        var $this = $(this);
+        if ($this.length) {
+            var data = {
+                req:       "api",
+                token:     $("#pagetoken").val(),
+                type:      "disablevaluegroup",
+                groupid   : $this.data("groupid"),
+                state     : $this.is(":checked") ? 1 : 0
+            };
+            
+            //save to server:
+            $.ajax({
+                url: 'index.php',  //Server script to process data
+                type: 'POST',
+                data:  data,
+                dataType: 'json',
+                beforeSend: function() {
+                    $this.prop('disabled',true);
+                },
+                success: function(response) {
+                    if (
+                        typeof response === 'object' && 
+                        typeof response.code !== 'undefined' &&
+                        response.code == "202"
+                    ) {
+                        console.log(response);
+                        
+                    } else {
+                        console.log(response);
+                        window.alertModal("שגיאה",window.langHook("setvalues_error_set_state_group"));
+                    }
+                    $this.prop('disabled',false);
+                },
+                error: function(xhr, ajaxOptions, thrownError){
+                    console.log(thrownError);
+                    window.alertModal("שגיאה",window.langHook("setvalues_error_set_state_group"));
+                    $this.prop('disabled',false);
+                },
+            });
+        }
+    });
     var $theSetValueForm = $("#setvalueform");
     if ($theSetValueForm.length) {
         
@@ -333,11 +389,6 @@ Trace::add_step(__FILE__,"Executing Page:");
                 type: 'POST',
                 data:  data,
                 dataType: 'json',
-                beforeSend: function() {
-                },
-                complete: function() {
-                    $but.prop("disabled",false);
-                },
                 success: function(response) {
                     if (
                         typeof response === 'object' && 
@@ -345,15 +396,17 @@ Trace::add_step(__FILE__,"Executing Page:");
                         response.code == "202"
                     ) {
                         console.log(response);
-                        
+                        $("#setvalues_reset_form").trigger("click");
                     } else {
                         console.log(response);
                         window.alertModal("שגיאה",window.langHook("setvalues_error_set_new_group"));
                     }
+                    $but.prop("disabled",false);
                 },
                 error: function(xhr, ajaxOptions, thrownError){
                     console.log(thrownError);
                     window.alertModal("שגיאה",window.langHook("setvalues_error_set_new_group"));
+                    $but.prop("disabled",false);
                 },
             });
         });

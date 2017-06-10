@@ -56,7 +56,8 @@ $Lang = array(
             //Dashboard window:
             
             //setvalues window:
-            "setvalues_error_set_new_group" => "אירעה שגיאה ביצירת קבוצת ערכים."
+            "setvalues_error_set_new_group" => "אירעה שגיאה ביצירת קבוצת ערכים.",
+            "setvalues_error_set_state_group" => "ארעה שגיאה בעת עדכון מצב הקבוצה נסה שנית או צור קשר עם מנהל מערכת.",
             //liveana window:
 
 

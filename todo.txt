@@ -1,2 +1,3 @@
 - Handle multiple quick clicks on the adding buttons that produxes animation errors.{{"_file":"D:/Server/Carasowatch/lib/js/app.js"}}
+- Refresh in setvalues the group list after creation{{"_file":"D:/Server/Carasowatch/pages/dash/page-setvalues.php"}}
 

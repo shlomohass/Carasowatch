@@ -76,7 +76,39 @@ if ( $inputs['type'] !== '' ) {
                 $Api->error("query");
             }
         break;
+        /**** Enable / Disable value groups: ****/
+        case "disablevaluegroup":
             
+            //Synth needed:
+            $get = $Api->Func->synth($_REQUEST, array('groupid','state'),false);
+            
+            //Validation input:
+            if (
+                empty($get['groupid']) || 
+                !is_numeric($get['groupid']) ||
+                !is_numeric($get['state'])
+            ) {
+                $Api->error("not-legal");
+            }
+            
+            //Logic:
+            $Op = new Operation();
+            $theObject = $Op->set_state_valuegroup(
+                $Api::$conn, 
+                $get['groupid'],
+                $get['state']
+            );
+
+            //Output:
+            if ($theObject === 0) {
+               $results = array(
+                   "groupId" => $get['groupid']
+                );
+                $success = "with-results";
+            } else {
+                $Api->error("query");
+            }
+        break;    
         //Unknown type - error:
         default : 
             $Api->error("bad-who");

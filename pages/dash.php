@@ -76,9 +76,8 @@ switch ($Page->variable("load-view")) {
     case "dash":
     break;
     case "setvalues":
-        //$cond_css[]     = GPATH_LIB_STYLE."bootstrap-datetimepicker.min.css";
-        //$cond_js_head[] = GPATH_LIB_JS."datetimepicker/moment.min.js";
-        //$cond_js_head[] = GPATH_LIB_JS."datetimepicker/bootstrap-datetimepicker.min.js";
+        $cond_css[]     = GPATH_LIB_JS."onoff/jquery.onoff.css";
+        $cond_js_head[] = GPATH_LIB_JS."onoff/jquery.onoff.min.js";
     break; 
     case "liveana":
         $cond_js_head[] = GPATH_LIB_JS."isotope/isotope.pkgd.js";

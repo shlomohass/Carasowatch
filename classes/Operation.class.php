@@ -41,45 +41,31 @@ class Operation {
             "name_valuegroup"    => $name,
             "values_valuegroup"  => json_encode($values),
             "targets_valuegroup" => json_encode($targets),
-            "notify_valuegroup"  => json_encode($notify),
+            "notify_valuegroup"  => json_encode(empty($notify)?array():$notify),
             "added_by_valuegroup" => $user,
             "added_date_valuegroup" => "NOW()",
         );
         return ($conn->insert_safe("valuegroup", $vars))?0:2;
     }
-    
-    /* Get all the saved parts catalog:
-     * @param $conn -> DB connection.
-     * @return Array()
+    /* Creates a new group value:
+     * @param $conn         -> DB connection.
+     * @param $groupid      -> Integer { group id }.
+     * @param $state        -> Integer { the boolean state }.
+     * @return Integer : 
+     *        0 { Success      }
+     *        1 { Insert Error }
      */
-    public function get_parts_list($conn) {
-        $results = $conn->get("amlah_parts_cat");
-        return (!empty($results))?$results:array();
-    }
-    
-    /* Get A unit information provide unit ID:
-     * @param $unitId -> Integer.
-     * @param $conn -> DB connection.
-     * @return Array()
-     */
-    public function get_unit_info($unitId, $conn) {
-        $results = $conn->get_joined(
-            array(
-                array("LEFT JOIN","unit_list.unit_location","location.loc_id")
-            ), 
-            "`unit_list`.`unit_id`, 
-             `unit_list`.`unit_name`, 
-             `unit_list`.`unit_type`, 
-             `unit_list`.`unit_location`, 
-             `unit_list`.`unit_info`, 
-             `location`.`loc_name`, 
-             `location`.`loc_is_border`, 
-             `location`.`loc_is_base`, 
-             `location`.`loc_is_terain`, 
-             `location`.`loc_is_civilian`
-            ",
-            "`unit_list`.`unit_id` = ".$conn->filter($unitId)
+    public function set_state_valuegroup($conn, $groupid, $state) {
+        $vars = array(
+            "enabled_valuegroup" => $state
         );
-        return (!empty($results))?$results:array();
+        return (
+            $conn->update(
+                "valuegroup", 
+                $vars,
+                array(array("id_valuegroup","=",$groupid)),
+                array(1)
+            )
+        ) ? 0 : 1;
     }
 }
