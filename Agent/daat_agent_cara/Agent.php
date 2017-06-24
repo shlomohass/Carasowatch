@@ -105,8 +105,9 @@ foreach ($Result as $targetId => $targetscraped) {
                     $articlesFound
                 )) {
                     $countArticlesStored++;
+                    //Create watch if needed:
+                    
                 }
-                
             }
         }
     }
