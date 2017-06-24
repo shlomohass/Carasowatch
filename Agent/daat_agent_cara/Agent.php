@@ -26,9 +26,29 @@ function toUniDate($old, $oldFormat, $tarFormat) {
         return "NULL";
     }
 }
+function parseValueObject($obj) {
+    $res = $obj;
+    $res["values_valuegroup"] = json_decode($res["values_valuegroup"]);
+    $res["targets_valuegroup"] = json_decode($res["targets_valuegroup"]);
+    $res["notify_valuegroup"] = json_decode($res["notify_valuegroup"]);
+    return $res;
+}
+function inTargets($id, $obj) {
+    $id = intval($id);
+    foreach($obj["targets_valuegroup"] as $k => $tar) {
+        if ($id === intval($tar->id)) {
+            
+            return true;
+        }
+    }
+    return false;
+}
 /*************************** Load Assets *********************************/
 
 $Page->variable("all-targets", $Page::$conn->get("targets"));
+$Page->variable("all-groups", $Page::$conn->get("valuegroup"));
+
+
 $tarCount = count($Page->variable("all-targets"));
 for ($i = 0; $i < $tarCount; $i++) {
 
@@ -104,9 +124,24 @@ foreach ($Result as $targetId => $targetscraped) {
                     "articles", 
                     $articlesFound
                 )) {
-                    $countArticlesStored++;
-                    //Create watch if needed:
                     
+                    $countArticlesStored++;
+                    
+                    //Create watch if needed:
+                    $storedIdsave = $Page::$conn->lastid();
+                    foreach ($Page->variable("all-groups") as $group) {
+                        $group = parseValueObject($group);
+                        if (inTargets($targetId, $group)) {
+                            $Page::$conn->insert_safe( 
+                                "watch", 
+                                array(
+                                    "article_watch" => $storedIdsave,
+                                    "values_watch" => $group["id_valuegroup"],
+                                    "notify_watch" => "0"
+                                )
+                            );
+                        }
+                    }
                 }
             }
         }

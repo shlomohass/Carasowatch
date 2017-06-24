@@ -11,13 +11,22 @@ require_once $_SERVER['DOCUMENT_ROOT']."/Carasowatch/Classes/Page.class.php";
 
 /***************** Load Page (DB, Func, conf, page ) *********************/
 
+Trace::add_step(__FILE__,"Define Settings");
+define("MINSCORE", 4);
+define("EMAILFROM", "carasowatch@caraso.co.il");
+define("EMAILREPLY", "shlomohassid@gmail.com");
+define("MAINEMAILSUBJECT", "CarasoWatch Report");
+
 Trace::add_step(__FILE__,"Create objects");
 $Page = new Page( $conf );
 
 $forceCreate = isset($_REQUEST["forcecreate"]) ? true : false;
 $Oper = isset($_REQUEST["run"]) ? true : false;
 
+
 /******************************Tools *************************************/
+
+include_once 'EmailTpl.php';
 
 function parseValueObject($obj) {
     $res = $obj;
@@ -28,19 +37,33 @@ function parseValueObject($obj) {
 }
 function inTargets($id, $obj) {
     $id = intval($id);
-    foreach($obj["targets_valuegroup"] as $k => $tar) {
-        if ($id === intval($tar->id)) {
-            
+    foreach($obj["targets_valuegroup"] as $k => $tar)
+        if ($id === intval($tar->id))
             return true;
-        }
-    }
     return false;
+}
+function notifyToRecip($_to, $_subject, $_message) {
+    $to      = $_to;
+    $subject = $_subject;
+    $message = $_message;
+    $headers =  'From: '.EMAILFROM."\r\n".
+                'Reply-To: '.EMAILREPLY."\r\n".
+                'Content-Type: text/html; charset=UTF8'."\r\n".
+                'X-Mailer: PHP/' . phpversion();
+    return mail($to, $subject, $message, $headers);
 }
 /*************************** Load Assets *********************************/
 
 $Page->variable("all-targets", $Page::$conn->get("targets"));
 $Page->variable("all-groups", $Page::$conn->get("valuegroup"));
 $Page->variable("all-articles", $Page::$conn->get("articles"));
+
+//Object to identify source
+$temp = array();
+foreach($Page->variable("all-targets") as $key => $target) {
+    $temp[$target["id_targets"]] = $target;
+}
+$Page->variable("all-targets-parsed", $temp);
 
 //Force create operation:
 if ($forceCreate) {
@@ -92,6 +115,8 @@ if ($Oper) {
                 "*",
                 " watch.notify_watch = '0' AND watch.values_watch = '".$theObj["id_valuegroup"]."' "
             );
+            $toSend = array();
+            
             //Set the score:
             foreach($activeWatches as $watch) {
                 $score = 0;
@@ -112,16 +137,57 @@ if ($Oper) {
                     foreach($parts as $part)
                         echo $part["key"]." - ".$part["score"]."</br>";
                     echo "</td></tr>";
+                    
+                    //Save for notify:
+                    if ($score > MINSCORE) {
+                        $toSend[] = array(
+                            "score"     => $score,
+                            "parts"     => $parts,
+                            "article"   => $watch
+                        );
+                    }
                 }
+                /*
                 $Page::$conn->update(
                     "watch",
-                    array("found_watch" => json_encode($parts), "score_watch" => $score),
+                    array("found_watch" => json_encode($parts), "score_watch" => $score, "notify_watch" => "1"),
                     array(array("id_watch","=", $watch["id_watch"])),
                     array(1)
                 );
+                */
             }
             Trace::reg_var("used-group", $theObj);
             Trace::reg_var("all-watches-target", $activeWatches);
+            
+            //Start Notify sequence:
+            if (!empty($toSend)) {
+                
+                //Which values were used:
+                $vals = [];
+                foreach ($theObj["values_valuegroup"] as $valkey => $val) {
+                    $vals[] = $val->text." (".$val->impact.")";
+                }
+                
+                //Sort by score:
+                function cmp($a, $b) {
+                   return $b['score'] - $a['score'];
+                }
+                usort($toSend,"cmp");
+                
+                //Sent to tpl and mail:
+                notifyToRecip(
+                    "shlomohassid@gmail.com", 
+                    MAINEMAILSUBJECT,
+                    getEmailTpl(
+                        $groupvaluename = $theObj["name_valuegroup"],
+                        date("d-m-Y h:i:sa"),
+                        implode(", &nbsp;", $vals),
+                        $toSend,
+                        $Page->variable("all-targets-parsed")
+                    )
+                );
+            }
+            
         }
     }
      echo "</table>";
@@ -133,3 +199,4 @@ Trace::reg_var("all-groups", $Page->variable("all-groups"));
 
 //Expose Trace
 Trace::expose_trace();
+
