@@ -104,6 +104,12 @@ if ($forceCreate) {
 
 //Trigger Watch:
 if ($Oper) {
+    
+    //Function to Sort by score:
+    function cmp($a, $b) {
+       return $b['score'] - $a['score'];
+    }
+    
     echo "<table>";
     foreach($Page->variable("all-groups") as $key => $group) {
         if (intval($group["enabled_valuegroup"]) === 1 ) {
@@ -147,14 +153,13 @@ if ($Oper) {
                         );
                     }
                 }
-                /*
+                // Update the watch row with the calculated results:
                 $Page::$conn->update(
                     "watch",
                     array("found_watch" => json_encode($parts), "score_watch" => $score, "notify_watch" => "1"),
                     array(array("id_watch","=", $watch["id_watch"])),
                     array(1)
                 );
-                */
             }
             Trace::reg_var("used-group", $theObj);
             Trace::reg_var("all-watches-target", $activeWatches);
@@ -168,10 +173,7 @@ if ($Oper) {
                     $vals[] = $val->text." (".$val->impact.")";
                 }
                 
-                //Sort by score:
-                function cmp($a, $b) {
-                   return $b['score'] - $a['score'];
-                }
+                //sort results:
                 usort($toSend,"cmp");
                 
                 //Sent to tpl and mail:
@@ -190,8 +192,9 @@ if ($Oper) {
             
         }
     }
-     echo "</table>";
+    echo "</table>";
 }
+
 Trace::reg_var("all-targets", $Page->variable("all-targets"));
 Trace::reg_var("all-groups", $Page->variable("all-groups"));
 

@@ -57,7 +57,7 @@ function getEmailTpl(
         }
         $artHtml[] = "
         <div style='font-size:0px; border:1px solid #c1c1c1; margin-bottom:20px;'>
-            <div style='width:160px; height:130px; position: relative; display:inline-block; vertical-align: top; background-image: url(".$a["article"]["image_articles"].");background-repeat: no-repeat;
+            <div style='width:160px; height:130px; position: relative; display:inline-block; vertical-align: top; background-image: url(".str_replace("'", "%27", $a["article"]["image_articles"]).");background-repeat: no-repeat;
     background-position: center;
     background-size: cover;'>
         	<span style='background-color:".$targets[$a["article"]["from_target_articles"]]["use_tag_color"]."; position: absolute; top: 0; right: 0; color: white; font-size: 10px; display: inline-block; padding: 2px 4px; font-weight: 600;'>
