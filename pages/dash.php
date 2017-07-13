@@ -50,6 +50,7 @@ $Page->variable("load-view", (!empty($_view)
                                     $_view === "dash" || 
                                     $_view === "" || 
                                     $_view === "liveana" || 
+                                    $_view === "watch" || 
                                     $_view === "setvalues")
                              ) ? $_view : "dash" );
 
@@ -87,7 +88,16 @@ switch ($Page->variable("load-view")) {
         $cond_js_body[] = GPATH_LIB_JS."isotope/horizontal.js";
         $cond_js_body[] = GPATH_LIB_JS."isotope/masonry-horizontal.js";
         $cond_js_body[] = GPATH_LIB_JS."isotope/packery-mode.pkgd.js";
-    break;           
+    break;
+    case "watch":
+        $cond_js_head[] = GPATH_LIB_JS."isotope/isotope.pkgd.js";
+        $cond_js_body[] = GPATH_LIB_JS."isotope/cells-by-column.js";
+        $cond_js_body[] = GPATH_LIB_JS."isotope/cells-by-row.js";
+        $cond_js_body[] = GPATH_LIB_JS."isotope/fit-columns.js";
+        $cond_js_body[] = GPATH_LIB_JS."isotope/horizontal.js";
+        $cond_js_body[] = GPATH_LIB_JS."isotope/masonry-horizontal.js";
+        $cond_js_body[] = GPATH_LIB_JS."isotope/packery-mode.pkgd.js";
+    break;     
 }
 $Page->include_css($cond_css);
 $Page->include_js($cond_js_head);
@@ -115,7 +125,8 @@ Trace::add_step(__FILE__,"Load page HTML");
                 $tabs = array(
                     "dash"           => ($Page->variable("load-view") === "dash")?"nav-active":"",
                     "setvalues"     => ($Page->variable("load-view") === "setvalues")?"nav-active":"",
-                    "liveana"     => ($Page->variable("load-view") === "liveana")?"nav-active":""
+                    "liveana"     => ($Page->variable("load-view") === "liveana")?"nav-active":"",
+                    "watch"     => ($Page->variable("load-view") === "watch")?"nav-active":"",
                 );
             ?>
             <ul class="nav-but">
@@ -135,6 +146,12 @@ Trace::add_step(__FILE__,"Load page HTML");
                     <a href="?page=dash&t=liveana">
                         <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
                         <?php Lang::P("dash_nav_liveana"); ?>
+                    </a>
+                </li>
+                <li class='<?php echo $tabs["watch"]; ?>'>
+                    <a href="?page=dash&t=watch">
+                        <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                        <?php Lang::P("dash_nav_watch"); ?>
                     </a>
                 </li>
             </ul>

@@ -681,7 +681,7 @@ class DB {
      * For `join_joins_parser` creates the query part of ORDER BY
      * 
      * @access private
-     * @param array : Example: array(array("table.row","table.row"),[ASC, DESC])
+     * @param array : Example: array(array("table.row","table.row"),array([ASC, DESC],[ASC, DESC]))
      * @param bool : Add ORDER BY ?
      * @return string : empty string when none;
      * 
@@ -689,23 +689,28 @@ class DB {
     private function join_order_parser($order, $add_name = true) {
         Trace::add_trace('Run DB order parser',__METHOD__);
         $return = ($add_name)?"ORDER BY ":'';
-        if ( is_array($order)  && count($order) > 0 
-            && is_array($order[0]) && count($order[0]) > 0 ) {
-            foreach ($order[0] as $data) {
+        if ( is_array($order)  && count($order) > 0 && is_array($order[0]) && count($order[0]) > 0 ) {
+            foreach ($order[0] as $ki => $data) {
                 $broke = (is_string($data))? explode(".",str_replace('`','',$data)):
                             array();
                 if (count($broke) > 0) {
                     if (isset($broke[1])) {
-                        $return .= "`".$broke[0]."`.`".$broke[1]."`,";
-                    } else { $return .= "`".$broke[0]."`,"; }
+                        $return .= "`".$broke[0]."`.`".$broke[1]."` ";
+                    } else { $return .= "`".$broke[0]."` "; }
+                    
+                    if (isset($order[1]) && is_string($order[1])) {
+                       $return .= strtoupper($order[1])." ";
+                    } elseif (isset($order[1]) && is_array($order[1]) && isset($order[1][$ki])) {
+                       $return .= strtoupper($order[1][$ki])." ";
+                    } elseif (isset($order[1]) && is_array($order[1]) && isset($order[1][0])) {
+                       $return .= strtoupper($order[1][0])." ";
+                    }
+                    $return .= ",";
                 }
             }
             $return = substr($return, 0, -1)." ";
-            if (isset($order[1]) && is_string($order[1])) {
-               $return .= strtoupper($order[1])." ";
-            }
         }
-        return ($return !== "ORDER BY " && $return !== "")?$return:'';
+        return ($return !== "ORDER BY " && $return !== "") ? $return : '';
     }
     
     /*

@@ -37,6 +37,45 @@ if ( $inputs['type'] !== '' ) {
             }
             
         break;
+           
+        /**** List Locations: ****/
+        case "getresultsofvaluegroup":  
+            
+            //Synth needed:
+            $get = $Api->Func->synth($_REQUEST, array('groupid','limit'),false);
+            
+            
+            //Validation input:
+            if (
+                empty($get['groupid']) || 
+                !is_numeric($get['groupid']) || 
+                empty($get['limit']) ||
+                !is_numeric($get['limit'])
+            ) {
+                $Api->error("not-legal");
+            }
+            
+            //Logic:
+            $Op = new Operation();
+            
+            $ResultList = $Op->get_valuegroup_results(
+                $Api::$conn, 
+                intval($get['groupid']),  
+                intval($get['limit'])
+            );
+            
+            //Output:
+            if (is_array($ResultList)) {
+               $results = array(
+                   "results" => $ResultList,
+                );
+                $success = "with-results";
+            } else {
+                $Api->error("results-false");
+            }
+            
+        break;
+        
             
         /**** Set new Group value to db: ****/
         case "createnewgroupvalue":
@@ -76,6 +115,7 @@ if ( $inputs['type'] !== '' ) {
                 $Api->error("query");
             }
         break;
+            
         /**** Enable / Disable value groups: ****/
         case "disablevaluegroup":
             

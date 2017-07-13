@@ -68,4 +68,29 @@ class Operation {
             )
         ) ? 0 : 1;
     }
+    /* Get results of groupvalue analaysed:
+     * @param $conn    -> DB connection.
+     * @param $id      -> Integer { group id }.
+     * @param $limit   -> Integer { the limit of results }.
+     * @return Array
+     */
+    public function get_valuegroup_results($conn, $id, $limit) {
+        $scorelim = 4;
+        $activeWatches = $conn->get_joined(
+            array(
+                array('LEFT LOIN', 'watch.article_watch', 'articles.id_articles')
+            ), 
+            "*",
+            " watch.notify_watch = '1' AND watch.values_watch = '".$id."' AND watch.score_watch > '".$scorelim."' ",
+            false,
+            array(array("watch.id_watch"),array("desc")),
+            array($limit)
+        );
+        if (is_array($activeWatches)) {
+            usort($activeWatches, function($a, $b) {
+                return $b['score_watch'] - $a['score_watch'];
+            });
+        }
+        return $activeWatches;
+    }
 }

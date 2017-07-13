@@ -18,33 +18,37 @@ $Lang = array(
         //Dash nav right:
         "dash_nav_dashboard"            => "שולחן עבודה",
         "dash_nav_setvalues"            => "הגדרת ערכים לניטור",
-        "dash_nav_liveana"              => "ניתוח בזמן אמת",
-    
+        "dash_nav_liveana"              => "סייר כתבות",
+        "dash_nav_watch"                => "תוצאות ניטור",
         //Page Dashboard:
-        "page_dash_title"                   => "שולחן עבודה",
+        "page_dash_title"               => "שולחן עבודה",
         
         //Page setvalues:
-        "page_setvalues_title"              => "הגדרת ערכים לניטור",
+        "page_setvalues_title"          => "הגדרת ערכים לניטור",
     
         //Page liveana:
-        "page_liveana_title"                => "ניתוח בזמן אמת",
-
+        "page_liveana_title"            => "סייר כתבות",
+        
+        //Page liveana:
+        "page_watch_title"              => "תוצאות ניטור",
+        
         //Edit Modal:
 
         
         
     //App Page:
-        "home_title"                    => "formi Home",
+        "home_title"                    => "CarasoWatch Home",
         "home_desc"                     => "",
         "home_keys"                     => "",
         
     //Admin Pages:
-        "admin_title"                    => "ניתוח ודיווח כשירות",
+        "admin_title"                    => "",
         "admin_desc"                     => "",
         "admin_keys"                     => ""
     ),
     
     "js" => array(
+        
         "script-frontend" => array(
 
         ),
@@ -58,8 +62,12 @@ $Lang = array(
             //setvalues window:
             "setvalues_error_set_new_group" => "אירעה שגיאה ביצירת קבוצת ערכים.",
             "setvalues_error_set_state_group" => "ארעה שגיאה בעת עדכון מצב הקבוצה נסה שנית או צור קשר עם מנהל מערכת.",
+            
             //liveana window:
-
+            
+            //watch window:
+            "watch_error_load_results" => "אירעה שגיאה בעת טעינת תוצאות מהשרת אנא צור קשר עם מנהל מערכת",
+            
 
         )
     )
