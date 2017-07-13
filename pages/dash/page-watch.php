@@ -10,10 +10,23 @@ $Page->variable("all-valuegroups", $Page::$conn->get("valuegroup"));
 /****************************** Manipulate Some data ******************************/
 //Object to identify source
 $temp = array();
+$targetsIdColorName = array();
 foreach($Page->variable("all-targets") as $key => $target) {
     $temp[$target["id_targets"]] = $target;
+    $targetsIdColorName[$target["id_targets"]] = array(
+        'name' =>  '"'.$target["name_targets"].'"',
+        'color' => '"'.$target["use_tag_color"].'"'
+    );
 }
 $Page->variable("all-targets", $temp);
+
+//Create Script variable for targets:
+echo "
+    <script>
+        var TargetOBJ = ".$Page->Func->json_encode_advanced($targetsIdColorName).";
+    </script>
+";
+
 
 /****************************** Page Debugger Output ***********************************/
 Trace::reg_var("all-targets", $Page->variable("all-targets"));
