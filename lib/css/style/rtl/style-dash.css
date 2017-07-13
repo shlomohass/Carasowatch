@@ -402,7 +402,20 @@ span.group_notice_by {
     color: #888888;
     padding-right: 5px;
 }
-
+/*************************************************************
+ * Page watch results :
+ *************************************************************/
+.watchres-score-tag {
+    position: absolute;
+    color: white;
+    font-weight: bolder;
+    top: 181px;
+    right: 0;
+    background-color: #3ba43b;
+    padding: 1px 5px;
+    margin-top: 0;
+    font-size: 12px;
+}
 /*************************************************************
  * Tables helpers :
  *************************************************************/
