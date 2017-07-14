@@ -668,7 +668,7 @@ class DB {
      * @param bool : Add WHERE ?
      * @return string : empty string when none;
      */
-    private function join_groupby_parser($group,$add_name = true) {
+    public function join_groupby_parser($group,$add_name = true) {
         Trace::add_trace('Run DB group parser',__METHOD__);
         $return = '';
         if (is_string($group)) {
@@ -686,7 +686,7 @@ class DB {
      * @return string : empty string when none;
      * 
      */
-    private function join_order_parser($order, $add_name = true) {
+    public function join_order_parser($order, $add_name = true) {
         Trace::add_trace('Run DB order parser',__METHOD__);
         $return = ($add_name)?"ORDER BY ":'';
         if ( is_array($order)  && count($order) > 0 && is_array($order[0]) && count($order[0]) > 0 ) {
@@ -722,7 +722,7 @@ class DB {
      * @return string : empty string when none;
      * 
      */
-    private function join_limit_parser($limit, $add_name = true) {
+    public function join_limit_parser($limit, $add_name = true) {
         Trace::add_trace('Run DB limit parser',__METHOD__);
         $return = ($add_name)?"LIMIT ":"";
         if (is_array($limit) && count($limit) > 0) {
@@ -741,7 +741,7 @@ class DB {
      * @param bool : Add WHERE ?
      * @return string : empty string when none;
      */
-    private function join_where_parser($where,$add_name = true) {
+    public function join_where_parser($where,$add_name = true) {
         Trace::add_trace('Run DB where parser',__METHOD__);
         $return = '';
         if (is_string($where)) {

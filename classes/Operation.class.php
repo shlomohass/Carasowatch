@@ -83,14 +83,34 @@ class Operation {
             "*",
             " watch.notify_watch = '1' AND watch.values_watch = '".$id."' AND watch.score_watch > '".$scorelim."' ",
             false,
-            array(array("watch.id_watch"),array("desc")),
+            array(array("articles.date_pub_uni_articles"),array("desc")),
             array($limit)
         );
         if (is_array($activeWatches)) {
+            /*
             usort($activeWatches, function($a, $b) {
                 return $b['score_watch'] - $a['score_watch'];
             });
+            */
         }
         return $activeWatches;
+    }
+    /* Get Articles Returned by Dates according to Uni date published:
+     * @param $conn    -> DB connection. 
+     * @param $limit   -> Array limit by DB conditions : Example: array(1,2) | array(10).
+     * @return array : results assoc array
+     * @return bool : sql error
+    */
+    public function get_articles_count_grouped_by_weeks($conn, $limit) {
+        return $conn->get_results("
+            SELECT CONCAT(YEAR(date_pub_uni_articles), '/', WEEK(date_pub_uni_articles)) AS week_name, 
+                   YEAR(date_pub_uni_articles) AS year_grouped, 
+                   WEEK(date_pub_uni_articles) AS week_grouped, 
+                   COUNT(1) 				   AS count_articles
+            FROM articles 
+            GROUP BY week_name
+            ORDER BY year_grouped DESC, week_grouped DESC ".
+            $conn->join_limit_parser($limit)
+        );
     }
 }

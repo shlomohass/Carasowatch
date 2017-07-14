@@ -75,6 +75,7 @@ $cond_js_body = array();
 
 switch ($Page->variable("load-view")) {
     case "dash":
+        $cond_js_head[] = GPATH_LIB_JS."ChartJS/Chart.bundle.min.js";
     break;
     case "setvalues":
         $cond_css[]     = GPATH_LIB_JS."onoff/jquery.onoff.css";

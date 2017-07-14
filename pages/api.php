@@ -18,27 +18,39 @@ if ( $inputs['type'] !== '' ) {
     switch (strtolower($inputs['type'])) {
         
             
-        /**** List Locations: ****/
-        case "listlocations":  
+        /**** List Count Articles by weeks: ****/
+        case "getarticlescountbyweek":  
+            
+            //Synth needed:
+            $get = $Api->Func->synth($_REQUEST, array('limit'),false);
+            
+            
+            //Validation input:
+            if (
+                empty($get['limit']) ||
+                !is_numeric($get['limit'])
+            ) {
+                $Api->error("not-legal");
+            }
             
             //Logic:
             $Op = new Operation();
             
-            $locList = $Op->get_location_list($Api::$conn);
+            $ResultList = $Op->get_articles_count_grouped_by_weeks(
+                $Api::$conn, 
+                array(intval($get['limit']))
+            );
             
             //Output:
-            if (is_array($locList)) {
-               $results = array(
-                   "locations" => $locList,
-                );
-                $success = "with-results";
+            if (is_array($ResultList)) {
+               $results = $ResultList;
+               $success = "with-results";
             } else {
-                $Api->error("results-false");
+               $Api->error("results-false");
             }
-            
         break;
            
-        /**** List Locations: ****/
+        /**** List Articles of value groups: ****/
         case "getresultsofvaluegroup":  
             
             //Synth needed:
