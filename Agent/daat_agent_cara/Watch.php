@@ -42,15 +42,18 @@ function inTargets($id, $obj) {
             return true;
     return false;
 }
-function notifyToRecip($_to, $_subject, $_message) {
-    $to      = $_to;
-    $subject = $_subject;
-    $message = $_message;
-    $headers =  'From: '.EMAILFROM."\r\n".
-                'Reply-To: '.EMAILREPLY."\r\n".
-                'Content-Type: text/html; charset=UTF8'."\r\n".
-                'X-Mailer: PHP/' . phpversion();
-    return mail($to, $subject, $message, $headers);
+function notifyToRecip($_tos, $_subject, $_message) {
+    foreach ($_tos as $_to) {
+        $to      = $_to;
+        $subject = $_subject;
+        $message = $_message;
+        $headers =  'From: '.EMAILFROM."\r\n".
+                    'Reply-To: '.EMAILREPLY."\r\n".
+                    'Content-Type: text/html; charset=UTF8'."\r\n".
+                    'X-Mailer: PHP/' . phpversion();
+        if (!mail($to, $subject, $message, $headers)) return false;
+    }
+    return true;
 }
 /*************************** Load Assets *********************************/
 
@@ -154,12 +157,14 @@ if ($Oper) {
                     }
                 }
                 // Update the watch row with the calculated results:
+                /*
                 $Page::$conn->update(
                     "watch",
                     array("found_watch" => json_encode($parts), "score_watch" => $score, "notify_watch" => "1"),
                     array(array("id_watch","=", $watch["id_watch"])),
                     array(1)
                 );
+                */
             }
             Trace::reg_var("used-group", $theObj);
             Trace::reg_var("all-watches-target", $activeWatches);
@@ -177,15 +182,32 @@ if ($Oper) {
                 usort($toSend,"cmp");
                 
                 //Sent to tpl and mail:
-                notifyToRecip(
-                    "shlomohassid@gmail.com", 
-                    MAINEMAILSUBJECT,
-                    getEmailTpl(
-                        $groupvaluename = $theObj["name_valuegroup"],
-                        date("d-m-Y h:i:sa"),
-                        implode(", &nbsp;", $vals),
-                        $toSend,
-                        $Page->variable("all-targets-parsed")
+                $theHtmlBody = getEmailTpl(
+                    $groupvaluename = $theObj["name_valuegroup"],
+                    date("d-m-Y h:i:sa"),
+                    implode(", &nbsp;", $vals),
+                    $toSend,
+                    $Page->variable("all-targets-parsed")
+                );
+                //Temp add here the parser of the recipients:
+                $theRecipients = array("shlomohassid@gmail.com");
+                notifyToRecip($theRecipients,MAINEMAILSUBJECT, $theHtmlBody);
+                
+                //Save the Report generated:
+                $Page::$conn->insert_safe( 
+                    "reports", 
+                    array(
+                        "report_of_group" => $group["id_valuegroup"],
+                        "report_sent_to" => json_encode($theRecipients),
+                        "report_datetime" => "NOW()",
+                        "report_articles" =>
+                            json_encode( 
+                                array_map(
+                                    function($p){ return $p["article"]["id_articles"]; },
+                                    $toSend
+                                )
+                            ),
+                        "report_html" => $theHtmlBody
                     )
                 );
             }
