@@ -15,6 +15,16 @@ $Page->variable("recent-articles",
         array(5)
     )
 );
+$Page->variable("recent-reports", 
+    $Page::$conn->select(
+        "reports",
+        "*",
+        false,
+        false,
+        array('DESC',array("report_datetime")),
+        array(5)
+    )
+);
 /****************************** Manipulate Some data ******************************/
 //Object to identify source
 $temp = array();
@@ -42,35 +52,22 @@ Trace::reg_var("all-articles-base", $Page->variable("all-articles-base"));
             <div class="make-box">
                 <h4>כתבות אחרונות:</h4>
                 <ul class="dash-latest-articales">
-                    <?php
-                    /*
-                    echo "<div class='item item-mans'>
-                            <div class='liveana-card'>
-                                <div class='liveana-source-tag' style='background-color:".$Page->in_variable("all-targets",$article["from_target_articles"],"use_tag_color").";'>".
-                                    $Page->in_variable("all-targets",$article["from_target_articles"],"name_targets")."</div>
-                                <div class='liveana-card-image' style='background-image:url(".str_replace("'", "%27", $article["image_articles"]).")'></div>
-                                <div class='liveana-card-meta'><a class='liveana_goto_article' href='".str_replace("'", "%27", $article["link_articles"])."' target='_blank'>עבור לכתבה</a><span class='datepub'>".$article["date_pub_uni_articles"]."</span></div>
-                                <div class='liveana-card-title'><h3>".$article["title_articles"]."</h3></div>
-                                <div class='liveana-card-desc'><p>".$article["desc_articles"]."</p></div>
-                            </div>
-                           </div>";
-                }*/
-                    
-foreach($Page->variable("recent-articles") as $key => $art) {
-    echo "<li>".
-        "<table style='width:100%'><tr>".
-        "<td style='width:61px;'><div class='dash-thumb-recent-image' style='background-image:url(".str_replace("'", "%27", $art["image_articles"]).")'></div></td>".
-        "<td style='vertical-align: text-top; padding:5px; position: relative;'>".
-            "<h5 class='elip'>".$art["title_articles"]."</h5>".
-            "<span class='date-show'>".$art["date_pub_uni_articles"].
-                "<em style='color:".$Page->in_variable("all-targets",$art["from_target_articles"],"use_tag_color")."'>".
-                    $Page->in_variable("all-targets",$art["from_target_articles"],"name_targets")
-                ."</em></span>".
-            "<a class='goto-article' href='".str_replace("'", "%27", $art["link_articles"])."' target='_blank'>עבור לכתבה</a>".
-        "</td>".
-        "</tr></table>".
-        "</li>";
-}
+                    <?php                    
+                        foreach($Page->variable("recent-articles") as $key => $art) {
+                            echo "<li>".
+                                "<table style='width:100%'><tr>".
+                                "<td style='width:61px;'><div class='dash-thumb-recent-image' style='background-image:url(".str_replace("'", "%27", $art["image_articles"]).")'></div></td>".
+                                "<td style='vertical-align: text-top; padding:5px; position: relative;'>".
+                                    "<h5 class='elip'>".$art["title_articles"]."</h5>".
+                                    "<span class='date-show'>".$art["date_pub_uni_articles"].
+                                        "<em style='color:".$Page->in_variable("all-targets",$art["from_target_articles"],"use_tag_color")."'>".
+                                            $Page->in_variable("all-targets",$art["from_target_articles"],"name_targets")
+                                        ."</em></span>".
+                                    "<a class='goto-article' href='".str_replace("'", "%27", $art["link_articles"])."' target='_blank'>עבור לכתבה</a>".
+                                "</td>".
+                                "</tr></table>".
+                                "</li>";
+                        }
                     ?>
                 </ul>
             </div>
@@ -78,7 +75,30 @@ foreach($Page->variable("recent-articles") as $key => $art) {
 
         <div class="col-sm-6 text-right" style="position:relative; height:250px;">
             <div class="make-box">
-                <h4>דוחות שהופצו:</h4>
+                <h4>דוחות אחרונים שהופצו:</h4>
+                <ul class="dash-latest-reports">
+                    <?php                    
+                        foreach($Page->variable("recent-reports") as $key => $rep) {
+                            $new_datetime = DateTime::createFromFormat ( "Y-m-d H:i:s", $rep["report_datetime"] );
+                            echo "<li>".
+                                "<table style='width:100%'><tr>".
+                                    "<td style='width:61px;'>".
+                                        "<div class='dash-thumb-recent-report-date' style='background-color:grey;'>".
+                                            "<strong>".$new_datetime->format('d')."</strong>".
+                                            "<span>".$new_datetime->format('M')."</span>".
+                                        "</div>".
+                                    "</td>".
+                                    "<td style='vertical-align: text-top; padding:5px; position: relative;'>".
+                                    "<h5 class='elip'>"."dddd"."</h5>".
+                                    "<span class='date-show'>"."--".
+                                        "<em style='color:black'>"."---"."</em></span>".
+                                    "<a class='goto-article' href='' target='_blank'>עבור לכתבה</a>".
+                                "</td>".
+                                "</tr></table>".
+                                "</li>";
+                        }
+                    ?>
+                </ul>
             </div>
         </div>
     </div>

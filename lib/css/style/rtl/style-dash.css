@@ -162,6 +162,25 @@ ul.dash-latest-articales li a.goto-article {
     font-size: 10px;
     font-weight: bold;
 }
+
+ul.dash-latest-reports {
+    list-style: none;
+    padding:0;
+}
+ul.dash-latest-reports .dash-thumb-recent-report-date {
+    font-size: 14px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    color:white;
+}
+ul.dash-latest-reports .dash-thumb-recent-report-date strong{
+    display: block;
+    text-align: center;
+}
+ul.dash-latest-reports .dash-thumb-recent-report-date span {
+    display: block;
+    text-align: center;
+}
 /*************************************************************
  * Dash- top :
  *************************************************************/
